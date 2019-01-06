@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     # custom
     'game_rules',
+    'admin_auth',
 ]
 
 MIDDLEWARE = [
