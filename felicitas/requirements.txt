@@ -1,5 +1,5 @@
 botocore==1.12.71
-Django==2.1.4
+Django==2.1.5
 django-excel-response2==2.0.8
 django-extensions==2.1.4
 django-six==1.0.4
