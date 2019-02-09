@@ -1,0 +1,593 @@
+{
+  "response_code": 0,
+  "results": [
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Richard Branson",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Alan Sugar",
+        "Donald Trump",
+        "Bill Gates"
+      ],
+      "question": "Virgin Trains, Virgin Atlantic and Virgin Racing, are all companies owned by which famous entrepreneur?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "HTC",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Oculus",
+        "Google",
+        "Razer"
+      ],
+      "question": "Which company did Valve cooperate with in the creation of the Vive?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Thomas & Martha",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Joey & Jackie",
+        "Jason & Sarah",
+        "Todd & Mira"
+      ],
+      "question": "What's the name of Batman's  parents?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Jones",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Williams",
+        "Davies",
+        "Evans"
+      ],
+      "question": "What is the most common surname Wales?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Demolition",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "The Dream Team",
+        "The Bushwhackers",
+        "The British Bulldogs"
+      ],
+      "question": "What was the name of the WWF professional wrestling tag team made up of the wrestlers Ax and Smash?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Mike",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Matthew",
+        "Mark",
+        "Max"
+      ],
+      "question": "What name represents the letter &quot;M&quot; in the NATO phonetic alphabet?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Genesis",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Exodus",
+        "Leviticus",
+        "Numbers"
+      ],
+      "question": "What is the first book of the Old Testament?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Key",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Sword",
+        "Pen",
+        "Cellphone"
+      ],
+      "question": "In the video-game franchise Kingdom Hearts, the main protagonist, carries a weapon with what shape?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Cabbage Patch Kids",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Transformers",
+        "Care Bears",
+        "Rubik&rsquo;s Cube"
+      ],
+      "question": "Which best selling toy of 1983 caused hysteria, resulting in riots breaking out in stores?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "A Tight Rope",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Broken Glass",
+        "Balls",
+        "The Moon"
+      ],
+      "question": "What does a funambulist walk on?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Nevada",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Arizona",
+        "New Mexico",
+        "Utah"
+      ],
+      "question": "Area 51 is located in which US state?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Adi&oacute;s",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        " Hola",
+        "Au Revoir",
+        "Salir"
+      ],
+      "question": "How would one say goodbye in Spanish?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Skin",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Heart",
+        "large Intestine",
+        "Liver"
+      ],
+      "question": "What is the largest organ of the human body?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Cancer",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Libra",
+        "Virgo",
+        "Sagittarius"
+      ],
+      "question": "Which sign of the zodiac is represented by the Crab?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "19",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "20",
+        "12",
+        "15"
+      ],
+      "question": "On a dartboard, what number is directly opposite No. 1?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Subscriber",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Single",
+        "Secure",
+        "Solid"
+      ],
+      "question": "What does the &#039;S&#039; stand for in the abbreviation SIM, as in SIM card? ",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Rum",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Gin",
+        "Vodka",
+        "Whisky"
+      ],
+      "question": "What alcoholic drink is made from molasses?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "George Washington",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Thomas Jefferson",
+        "Abraham Lincoln",
+        "Benjamin Franklin"
+      ],
+      "question": "Which American president appears on a one dollar bill?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Octagon",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Hexagon",
+        "Circle",
+        "Triangle"
+      ],
+      "question": "What geometric shape is generally used for stop signs?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "A dance",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "A medical procedure",
+        "A sport",
+        "A language"
+      ],
+      "question": "What is &quot;dabbing&quot;?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Cube",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Sphere",
+        "Cylinder",
+        "Pyramid"
+      ],
+      "question": "What is the shape of the toy invented by Hungarian professor Ernő Rubik?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Rock Band",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Meat Beat Mania",
+        "Guitar Hero Live",
+        "Dance Dance Revolution"
+      ],
+      "question": "Which one of the following rhythm games was made by Harmonix?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Gorilla",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Tiger",
+        "Panda",
+        "Crocodile"
+      ],
+      "question": "What type of animal was Harambe, who was shot after a child fell into it&#039;s enclosure at the Cincinnati Zoo?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Licorice",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Lollipop",
+        "Chocolate",
+        "Bubblegum"
+      ],
+      "question": "Red Vines is a brand of what type of candy?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Golden State",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Sunshine State",
+        "Bay State",
+        "Treasure State"
+      ],
+      "question": "What is the nickname of the US state of California?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Wax sculptures",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Designer clothing",
+        "Unreleased film reels",
+        "Vintage cars"
+      ],
+      "question": "What is on display in the Madame Tussaud&#039;s museum in London?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Spruce Goose",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Noah&#039;s Ark",
+        "Fat Man",
+        "Trojan Horse"
+      ],
+      "question": "What was the nickname given to the Hughes H-4 Hercules, a heavy transport flying boat which achieved flight in 1947?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Pink",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Yellow",
+        "Blue",
+        "Green"
+      ],
+      "question": "Which of these colours is NOT featured in the logo for Google?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Burro",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Caballo",
+        "Toro",
+        "Perro"
+      ],
+      "question": "What is the Spanish word for &quot;donkey&quot;?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Chapeau",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Bonnet",
+        " &Eacute;charpe",
+        " Casque"
+      ],
+      "question": "What is the French word for &quot;hat&quot;?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "100",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "50",
+        "25",
+        "69"
+      ],
+      "question": "Five dollars is worth how many nickles?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Benjamin Franklin",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "George Washington",
+        "Abraham Lincoln",
+        "Thomas Jefferson"
+      ],
+      "question": "Who is depicted on the US hundred dollar bill?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Greenwich Mean Time",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Global Meridian Time",
+        "General Median Time",
+        "Glasgow Man Time"
+      ],
+      "question": "What do the letters in the GMT time zone stand for?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Scimitar",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Falchion",
+        "Ulfberht",
+        "Flamberge"
+      ],
+      "question": "Which one of these is not a typical European sword design?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "D. G. Yuengling and Son, Inc",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Anheuser Busch",
+        "Boston Beer Company",
+        "Miller Coors"
+      ],
+      "question": "Which American-owned brewery led the country in sales by volume in 2015?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Truth",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Answer",
+        "Cause",
+        "Source"
+      ],
+      "question": "According to Sherlock Holmes, &quot;If you eliminate the impossible, whatever remains, however improbable, must be the...&quot;",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Polska",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Pupcia",
+        "Polszka",
+        "P&oacute;land"
+      ],
+      "question": "What is the name of Poland in Polish?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Print",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Digest",
+        "Look",
+        "Read"
+      ],
+      "question": "The New York Times slogan is, &ldquo;All the News That&rsquo;s Fit to&hellip;&rdquo;",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Kentucky Fried Chicken",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Kentucky Fresh Cheese",
+        "Kibbled Freaky Cow",
+        "Kiwi Food Cut"
+      ],
+      "question": "What do the letters of the fast food chain KFC stand for?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Green",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Red",
+        "Light Blue",
+        "Orange"
+      ],
+      "question": "What color is the &quot;Ex&quot; in FedEx Ground?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Metropolitan Line",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Circle Line",
+        "Bakerloo Line",
+        "Victoria Line"
+      ],
+      "question": "What was the first ever London Underground line to be built?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "2,722 ft",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "2,717 ft",
+        "2,546 ft",
+        "3,024 ft"
+      ],
+      "question": "How tall is the Burj Khalifa?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Uno",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Go Fish",
+        "Twister",
+        "Munchkin"
+      ],
+      "question": "Which of the following card games revolves around numbers and basic math?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Bearings",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Axles",
+        "Gears",
+        "Belts"
+      ],
+      "question": "What machine element is located in the center of fidget spinners?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "John F. Kennedy",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Theodore Roosevelt",
+        "Abraham Lincoln",
+        "Thomas Jefferson"
+      ],
+      "question": "Which of the following presidents is not on Mount Rushmore?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Crypton Future Media",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "Sega",
+        "Sony",
+        "Yamaha Corporation"
+      ],
+      "question": "What company developed the vocaloid Hatsune Miku?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Brazil",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "China",
+        "South Korea",
+        "United States of America"
+      ],
+      "question": "Which country, not including Japan, has the most people of japanese decent?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Almond Joy",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "M&amp;M&#039;s",
+        "Twix",
+        "Snickers"
+      ],
+      "question": "Which candy is NOT made by Mars?",
+      "type": "multiple"
+    },
+    {
+      "category": "General Knowledge",
+      "correct_answer": "Arby&#039;s",
+      "difficulty": "easy",
+      "incorrect_answers": [
+        "McDonald&#039;s",
+        "Burger King",
+        "Wendy&#039;s"
+      ],
+      "question": "In which fast food chain can you order a Jamocha Shake?",
+      "type": "multiple"
+    }
+  ]
+}

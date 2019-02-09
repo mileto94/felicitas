@@ -1,0 +1,37 @@
+{
+    "results": [
+        {
+            "title": "How old is the statue of Sofia",
+            "category": "Basic Knowledge",
+            "difficulty": "medium",
+            "poll_type": "single",
+            "help_text": "",
+            "positive_marks": 3,
+            "negative_marks": -3,
+            "answers": [
+                {
+                    "title": "3",
+                    "is_correct": true,
+                    "next_poll": null
+                },
+                {
+                    "title": "1",
+                    "is_correct": false,
+                    "next_poll": null
+                },
+                {
+                    "title": "2",
+                    "is_correct": false,
+                    "next_poll": null
+                },
+                {
+                    "title": "4",
+                    "is_correct": false,
+                    "next_poll": null
+                },
+            ]
+            // "correct_answer": "3",
+            // "other_answers": ["2", "1", "4"],
+        }
+    ]
+}
