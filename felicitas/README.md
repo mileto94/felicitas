@@ -1,2 +1,2 @@
-# felicitas
-Project for question based games
+# Game Setup
+Microservice for setup info for game and entering polls for question based games
