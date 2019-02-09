@@ -13,9 +13,11 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url, include
-from django.contrib import admin
+from django.conf.urls import url
+from game_rules.views import get_next_poll, get_polls_per_game_type
+
 
 urlpatterns = [
-
+    url(r'^next-poll/(?P<game_id>\d+)/(?P<poll_id>\d+)/$', get_next_poll, name='next-poll'),
+    url(r'^all-polls/(?P<game_id>\d+)/$', get_polls_per_game_type, name='all-polls')
 ]
