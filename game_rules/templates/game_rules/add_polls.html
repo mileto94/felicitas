@@ -1,0 +1,33 @@
+{% extends 'admin_auth/base.html' %}
+
+{% block title %}Add polls per game{% endblock %}
+
+
+{% block sidebar %}
+    <ul>
+        <li><a href="{% url 'admin:index' %}">Home</a></li>
+        <li><a href="{% url 'admin:login' %}">Log in</a></li>
+        <li><a href="{% url 'admin_auth:registration' %}">Registration</a></li>
+    </ul>
+{% endblock %}
+
+
+{% block content %}
+  <h2>Add polls</h2>
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <p>
+        {{ field.label_tag }}<br>
+        {{ field }}
+        {% if field.help_text %}
+          <small style="color: grey">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+          <p style="color: red">{{ error }}</p>
+        {% endfor %}
+      </p>
+    {% endfor %}
+    <button type="submit">Add</button>
+  </form>
+{% endblock %}
