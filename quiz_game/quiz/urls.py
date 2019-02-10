@@ -15,5 +15,10 @@ Including another URLconf
 """
 from django.urls import path
 
+from quiz.views import start_game,end_game
+
+
 urlpatterns = [
+    path('start-game/<int:user_id>/', start_game, name='start-game'),
+    path('end-game/<int:game_id>/', end_game, name='end-game'),
 ]

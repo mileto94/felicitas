@@ -5,4 +5,4 @@ from quiz.models import Game
 
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('id', 'player', 'finished', 'result')

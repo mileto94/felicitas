@@ -6,7 +6,8 @@ class Game(models.Model):
 
     # TODO: Save in Redis info for available polls per game
     player = models.PositiveIntegerField()
-    result = models.IntegerField()
+    result = models.IntegerField(default=0)
+    finished = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Game'
