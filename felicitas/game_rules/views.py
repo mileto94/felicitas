@@ -1,5 +1,6 @@
 from django.http import JsonResponse, Http404
 from django.forms.models import model_to_dict
+from django.shortcuts import get_object_or_404
 
 from game_rules.models import Poll
 
@@ -28,3 +29,8 @@ def get_polls_per_game_type(request, game_id):
         game_id=game_id, game__is_active=True).values_list('id', flat=True))
     return JsonResponse({'polls': ids})
 
+
+def get_poll_help(request, poll_id):
+    """Get help of selected poll."""
+    poll = get_object_or_404(Poll, id=poll_id)
+    return JsonResponse({'help_text': poll.help_text})

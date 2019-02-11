@@ -26,6 +26,7 @@ SECRET_KEY = '214$%tgcshh)q5k=n+c5l^p92$pxk&&323alt5+@8)(#c!xd@6'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+# TODO: Update this on deploy. This will confirm only our services will communicate.
 
 
 # Application definition
