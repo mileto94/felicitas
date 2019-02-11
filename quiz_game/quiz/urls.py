@@ -1,4 +1,4 @@
-"""quiz_game URL Configuration
+"""quiz URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/2.1/topics/http/urls/
@@ -19,6 +19,6 @@ from quiz.views import start_game,end_game
 
 
 urlpatterns = [
-    path('start-game/<int:user_id>/', start_game, name='start-game'),
+    path('start-game/<int:game_type>/<int:user_id>/', start_game, name='start-game'),
     path('end-game/<int:game_id>/', end_game, name='end-game'),
 ]

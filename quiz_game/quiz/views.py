@@ -5,11 +5,14 @@ from django.shortcuts import get_object_or_404
 from quiz.models import Game
 
 
-def start_game(request, user_id):
+def start_game(request, game_type, user_id):
     if not user_id:
         return Http404('Invalid user id')
 
-    game = Game.objects.create(player=user_id)
+    if not game_type:
+        return Http404('Invalid game id')
+
+    game = Game.objects.create(player=user_id, game_type=game_type)
     request.session['game_id'] = game.id
     return JsonResponse(model_to_dict(game))
 
