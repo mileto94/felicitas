@@ -16,3 +16,13 @@ class Game(models.Model):
 
     def __str__(self):
         return f'ID: {self.id} by player {self.player}'
+
+
+class VoteLog(models.Model):
+    player = models.PositiveIntegerField()
+    game = models.PositiveIntegerField()
+    vote = models.CharField(max_length=150)
+    points = models.SmallIntegerField(default=0)
+
+    def __str__(self):
+        return f'player ID {self.player} for {self.game}'

@@ -4,7 +4,7 @@ sudo -u postgres psql postgres
 
 
 - user results list
-- start game
-- vote for a poll
-- terminate game
-- get help per poll
++ start game
++ vote for a poll
++ terminate game
++ get help per poll
