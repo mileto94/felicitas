@@ -1,3 +1,4 @@
+from django.db.models import F
 from django.http import JsonResponse, Http404
 from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404
@@ -34,4 +35,9 @@ def end_game(request, game_id):
 class VotePerPoll(generics.CreateAPIView):
     queryset = VoteLog.objects.all()[:2]
     serializer_class = VotePollSerializer
-    # permission_classes = (IsAdminUser,)
+    # TODO: Check whether we should use some permission classes
+
+    def perform_create(self, serializer):
+        votelog = serializer.save()
+        Game.objects.filter(id=votelog.game, player=votelog.player).update(
+            result=F('result') + votelog.points)
