@@ -124,37 +124,3 @@ class Category(models.Model):
 
     def __str__(self):
         return self.title
-
-
-# class VoteLog(Model):
-#     """
-#     Model for saving data for single vote. Example:
-#     {
-#         "key": 1,  # can not be auto incremented
-#         "player": 1,  # can not be auto incremented
-#         "question": 1
-#         "answer": "some answer",
-#         "is_correct": true,
-#         "town": "NY",
-#         "country": "US"
-#     }
-#     """
-
-#     key = NumberAttribute(hash_key=True, default=0)
-#     player = NumberAttribute()
-#     question = NumberAttribute()
-#     answer = UnicodeAttribute()
-#     is_correct = BooleanAttribute()
-#     town = UnicodeAttribute()
-#     country = UnicodeAttribute()
-
-#     class Meta:
-#         table_name = 'dev_votelog'
-
-#         # Specifies the write capacity
-#         write_capacity_units = 10
-#         # Specifies the read capacity
-#         read_capacity_units = 10
-
-#         # TODO: for local dynamo usage
-#         host = "http://localhost:8002"
