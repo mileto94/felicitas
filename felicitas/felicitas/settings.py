@@ -134,15 +134,16 @@ STATIC_URL = '/static/'
 ADMIN_SITE_HEADER = 'Game Setup Administration'
 
 # ----------- AWS Settings -------------
+import felicitas.aws_credentials as creds
 
-AWS_ACCESS_KEY_ID = ''
-AWS_SECRET_ACCESS_KEY = ''
-AWS_REGION_NAME = ''
+AWS_ACCESS_KEY_ID = creds.AWS_ACCESS_KEY_ID or ''
+AWS_SECRET_ACCESS_KEY = creds.AWS_SECRET_ACCESS_KEY or ''
+AWS_REGION_NAME = creds.AWS_REGION_NAME or ''
 
 
 SNS_SETTINGS = {
     'updateGameInfo': {
-        'TopicArn': ''
+        'TopicArn': creds.SNS_SETTINGS['updateGameInfo']['TopicArn'] or ''
     }
 }
 

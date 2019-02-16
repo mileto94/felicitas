@@ -18,7 +18,7 @@ class GameTypeAdmin(admin.ModelAdmin):
     def save_model(self, request, game_type, form, change):
         if not game_type.id:
             game_type.created_by = request.user
-            game_type.save()
+        game_type.save()
 
     def get_urls(self):
         return [
