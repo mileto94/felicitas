@@ -114,11 +114,11 @@ class BasePoll(models.Model):
                     'game_id': self.id,
                     'polls': list(self.game.poll_set.values_list('id', flat=True))
                 }),
-                Subject='updateGameInfo',
-                MessageStructure='updateGameInfoStructure',
+                Subject='updateGamePolls',
+                MessageStructure='updateGamePollsStructure',
                 MessageAttributes={
-                    'updateGameInfoStructure': {
-                        'StringValue': 'updateGameInfo',
+                    'updateGamePollsStructure': {
+                        'StringValue': 'updateGamePolls',
                         'DataType': 'String'
                     }
                 }
@@ -131,8 +131,15 @@ class BasePoll(models.Model):
     def save(self, *args, **kwargs):
         is_new = not self.id
         super(BasePoll, self).save(*args, **kwargs)
-        if is_new:
+        if is_new and self.game:
             self._update_game_polls()
+
+    def delete(self, *args, **kwargs):
+        poll_id = self.id
+        super(BasePoll, self).delete(*args, **kwargs)
+        self.id = poll_id
+        self._update_game_polls()
+        #TODO: handle many delete
 
 
 class Poll(BasePoll):
