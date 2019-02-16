@@ -15,11 +15,13 @@ Including another URLconf
 """
 from django.urls import path
 
-from quiz.views import start_game, end_game, VotePerPoll, RetrieveGameInfoUpdate
+from quiz.views import (
+    StartGame, end_game, VotePerPoll, RetrieveGameInfoUpdate,
+)
 
 
 urlpatterns = [
-    path('start-game/<int:game_type>/<int:user_id>/', start_game, name='start-game'),
+    path('start-game/', StartGame.as_view(), name='start-game'),
     path('end-game/<int:game_id>/', end_game, name='end-game'),
     path('poll-vote/', VotePerPoll.as_view(), name='poll-vote'),
     path('game-info-update/', RetrieveGameInfoUpdate.as_view(), name='game-info-update'),

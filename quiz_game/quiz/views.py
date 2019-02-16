@@ -1,30 +1,44 @@
 import json
 
+from django.conf import settings
 from django.core.cache import cache
 from django.db.models import F
-from django.http import JsonResponse, Http404, HttpResponse
+from django.http import JsonResponse, Http404
 from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404
 
-from rest_framework import generics
+from rest_framework import generics, permissions, response, status
 from rest_framework.parsers import JSONParser
-from rest_framework.views import APIView
 
 from quiz.models import Game, VoteLog
 from quiz.request_parsers import PlainTextParser
-from quiz.serializers import VotePollSerializer
+from quiz.serializers import (
+    GameInfoUpdateSerializer, NewGameSerializer, VotePollSerializer)
 
 
-def start_game(request, game_type, user_id):
-    if not user_id:
-        return Http404('Invalid user id')
+class StartGame(generics.CreateAPIView):
+    queryset = Game.objects.none()
+    authentication_classes = ()
+    permission_classes = (permissions.AllowAny, )
+    serializer_class = NewGameSerializer
+    # TODO: Check whether we should use some permission classes
 
-    if not game_type:
-        return Http404('Invalid game id')
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer_class()(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        player = serializer.validated_data.get('player')
+        game_type = serializer.validated_data.get('game_type')
 
-    game = Game.objects.create(player=user_id, game_type=game_type)
-    request.session['game_id'] = game.id
-    return JsonResponse(model_to_dict(game))
+        game = Game.objects.create(player=player, game_type=game_type)
+        request.session['game_id'] = game.id
+
+        response_data = model_to_dict(game)
+        cache_key = settings.GAME_INFO_KEY.format(game_id=game_type)
+        response_data['game_description'] = cache.get(cache_key)
+
+        headers = self.get_success_headers(serializer.data)
+        return response.Response(
+            response_data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 def end_game(request, game_id):
@@ -49,28 +63,23 @@ class VotePerPoll(generics.CreateAPIView):
             result=F('result') + votelog.points)
 
 
-class RetrieveGameInfoUpdate(APIView):
+class RetrieveGameInfoUpdate(generics.CreateAPIView):
     queryset = VoteLog.objects.none()
     authentication_classes = ()
     permission_classes = ()
     parser_classes = (PlainTextParser, JSONParser)
+    serializer_class = GameInfoUpdateSerializer
     # TODO: Check whether we should use some permission classes
 
     def post(self, request, *args, **kwargs):
-        print(args)
-        print(kwargs)
-        print(request.data)
-        GAME_INFO_KEY = 'game-{game_id}-info'
+        print('Retrieved game info update: ', request.data)
         message_data = json.loads(request.data.get('Message', "{}"))
-        game_id = message_data.get('game_id')
-        game_info = message_data.get('game_info')
-        if game_id and game_info:
-            cache.set(
-                GAME_INFO_KEY.format(game_id=game_id),
-                game_info
-            )
-        else:
-            raise ValueError('Improper information for game: {game_id}, {game_info}'.format(
-                game_id=game_id, game_info=game_info
-            ))
-        return JsonResponse({'status': 'OK'})
+        serializer = self.get_serializer(data=message_data)
+        serializer.is_valid(raise_exception=True)
+
+        game_id = serializer.validated_data.get('game_id')
+        game_info = serializer.validated_data.get('game_info')
+        cache_key = settings.GAME_INFO_KEY.format(game_id=game_id)
+        cache.set(cache_key, game_info)
+        print(cache.get(cache_key))
+        return response.Response({'status': 'OK'}, status=status.HTTP_200_OK)
