@@ -87,3 +87,10 @@ class PollAdmin(admin.ModelAdmin):
     list_display = ('title', 'game', 'category', 'difficulty', 'poll_type')
     inlines = [AnswerAdminInline, ]
 
+    def delete_queryset(self, request, queryset):
+        query_ids = list(queryset.values_list('id', flat=True))
+        qs = list(queryset)
+        queryset.delete()
+        for index, obj in enumerate(qs):
+            obj.id = query_ids[index]
+            obj._update_game_polls()

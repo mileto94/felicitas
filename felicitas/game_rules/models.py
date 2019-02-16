@@ -139,7 +139,6 @@ class BasePoll(models.Model):
         super(BasePoll, self).delete(*args, **kwargs)
         self.id = poll_id
         self._update_game_polls()
-        #TODO: handle many delete
 
 
 class Poll(BasePoll):
