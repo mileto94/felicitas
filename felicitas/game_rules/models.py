@@ -2,7 +2,6 @@ import json
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 from felicitas.aws_connections import get_client
@@ -11,7 +10,6 @@ from felicitas.aws_connections import get_client
 class GameType(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField(blank=True, null=True)
-    questions_settings = JSONField()
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=False)
     polls_count = models.PositiveSmallIntegerField(default=1)

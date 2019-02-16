@@ -11,6 +11,15 @@ from game_rules.utils import upload_polls_from_file
 
 @admin.register(GameType)
 class GameTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'pk', 'is_active', 'polls_count', 'created_by')
+    list_editable = ('is_active', 'polls_count')
+    readonly_fields = ('created_by', )
+
+    def save_model(self, request, game_type, form, change):
+        if not game_type.id:
+            game_type.created_by = request.user
+            game_type.save()
+
     def get_urls(self):
         return [
             path(
