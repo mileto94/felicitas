@@ -12,7 +12,7 @@ from quiz.models import Game, VoteLog
 from quiz.request_parsers import PlainTextParser
 from quiz.serializers import (
     GameInfoUpdateSerializer, NewGameSerializer, VotePollSerializer,
-    EndGameSerializer, GameScoreSerializer)
+    EndGameSerializer, GameScoreSerializer, GamePollsUpdateSerializer)
 
 
 class StartGame(generics.CreateAPIView):
@@ -99,3 +99,25 @@ class RankedScores(generics.ListAPIView):
     queryset = Game.objects.filter(finished=True).values(
         'game_type', 'player').annotate(result=Sum('result')).order_by('-result')
     serializer_class = GameScoreSerializer
+
+
+class RetrieveGamePollsUpdate(generics.CreateAPIView):
+    queryset = VoteLog.objects.none()
+    authentication_classes = ()
+    permission_classes = ()
+    parser_classes = (PlainTextParser, JSONParser)
+    serializer_class = GamePollsUpdateSerializer
+    # TODO: Check whether we should use some permission classes
+
+    def post(self, request, *args, **kwargs):
+        print('Retrieved game polls update: ', request.data)
+        message_data = json.loads(request.data.get('Message', "{}"))
+        serializer = self.get_serializer(data=message_data)
+        serializer.is_valid(raise_exception=True)
+
+        game_id = serializer.validated_data.get('game_id')
+        game_polls = serializer.validated_data.get('polls')
+        cache_key = settings.GAME_POLLS_KEY.format(game_id=game_id)
+        cache.set(cache_key, game_polls)
+        print(cache.get(cache_key))
+        return response.Response({'status': 'OK'}, status=status.HTTP_200_OK)

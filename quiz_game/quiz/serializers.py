@@ -28,6 +28,14 @@ class GameInfoUpdateSerializer(serializers.Serializer):
         fields = ('game_id', 'game_info')
 
 
+class GamePollsUpdateSerializer(serializers.Serializer):
+    game_id = serializers.IntegerField()
+    polls = serializers.ListField(child=serializers.IntegerField())
+
+    class Meta:
+        fields = ('game_id', 'polls')
+
+
 class EndGameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game

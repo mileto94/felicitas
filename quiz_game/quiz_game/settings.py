@@ -151,6 +151,7 @@ REST_FRAMEWORK = {
 
 
 GAME_INFO_KEY = 'game-{game_id}-info'
+GAME_POLLS_KEY = 'game-{game_id}-polls'
 
 
 CACHES = {
