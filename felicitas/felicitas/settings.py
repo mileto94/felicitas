@@ -144,6 +144,9 @@ AWS_REGION_NAME = creds.AWS_REGION_NAME or ''
 SNS_SETTINGS = {
     'updateGameInfo': {
         'TopicArn': creds.SNS_SETTINGS['updateGameInfo']['TopicArn'] or ''
+    },
+    'updateGamePolls': {
+        'TopicArn': creds.SNS_SETTINGS['updateGamePolls']['TopicArn'] or ''
     }
 }
 

@@ -105,6 +105,35 @@ class BasePoll(models.Model):
     def __str__(self):
         return self.title
 
+    def _update_game_polls(self):
+        try:
+            sns_client = get_client('sns')
+            response = sns_client.publish(
+                TopicArn=settings.SNS_SETTINGS['updateGamePolls']['TopicArn'],
+                Message=json.dumps({
+                    'game_id': self.id,
+                    'polls': list(self.game.poll_set.values_list('id', flat=True))
+                }),
+                Subject='updateGameInfo',
+                MessageStructure='updateGameInfoStructure',
+                MessageAttributes={
+                    'updateGameInfoStructure': {
+                        'StringValue': 'updateGameInfo',
+                        'DataType': 'String'
+                    }
+                }
+            )
+            print('SNS response for game info update: ', response)
+        except Exception as e:
+            print('Failed to send information about game info update.')
+            print(e)
+
+    def save(self, *args, **kwargs):
+        is_new = not self.id
+        super(BasePoll, self).save(*args, **kwargs)
+        if is_new:
+            self._update_game_polls()
+
 
 class Poll(BasePoll):
     """
