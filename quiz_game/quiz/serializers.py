@@ -37,3 +37,9 @@ class EndGameSerializer(serializers.ModelSerializer):
         super(EndGameSerializer, self).__init__(*args, **kwargs)
         self.fields['id'].required = True
         self.fields['id'].read_only = False
+
+
+class GameScoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Game
+        fields = ('game_type', 'player', 'result')

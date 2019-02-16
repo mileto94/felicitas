@@ -2,7 +2,7 @@ import json
 
 from django.conf import settings
 from django.core.cache import cache
-from django.db.models import F
+from django.db.models import F, Count, Sum
 from django.forms.models import model_to_dict
 
 from rest_framework import generics, permissions, response, status
@@ -12,7 +12,7 @@ from quiz.models import Game, VoteLog
 from quiz.request_parsers import PlainTextParser
 from quiz.serializers import (
     GameInfoUpdateSerializer, NewGameSerializer, VotePollSerializer,
-    EndGameSerializer)
+    EndGameSerializer, GameScoreSerializer)
 
 
 class StartGame(generics.CreateAPIView):
@@ -93,3 +93,9 @@ class RetrieveGameInfoUpdate(generics.CreateAPIView):
         cache.set(cache_key, game_info)
         print(cache.get(cache_key))
         return response.Response({'status': 'OK'}, status=status.HTTP_200_OK)
+
+
+class RankedScores(generics.ListAPIView):
+    queryset = Game.objects.filter(finished=True).values(
+        'game_type', 'player').annotate(result=Sum('result')).order_by('-result')
+    serializer_class = GameScoreSerializer
