@@ -14,6 +14,11 @@ class NewGameSerializer(serializers.ModelSerializer):
         model = Game
         fields = ('game_type', 'player')
 
+    def __init__(self, *args, **kwargs):
+        super(NewGameSerializer, self).__init__(*args, **kwargs)
+        self.fields['game_type'].required = True
+        self.fields['player'].required = True
+
 
 class GameInfoUpdateSerializer(serializers.Serializer):
     game_id = serializers.IntegerField()
@@ -21,3 +26,14 @@ class GameInfoUpdateSerializer(serializers.Serializer):
 
     class Meta:
         fields = ('game_id', 'game_info')
+
+
+class EndGameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Game
+        fields = ('id', )
+
+    def __init__(self, *args, **kwargs):
+        super(EndGameSerializer, self).__init__(*args, **kwargs)
+        self.fields['id'].required = True
+        self.fields['id'].read_only = False

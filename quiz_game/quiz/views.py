@@ -3,9 +3,7 @@ import json
 from django.conf import settings
 from django.core.cache import cache
 from django.db.models import F
-from django.http import JsonResponse, Http404
 from django.forms.models import model_to_dict
-from django.shortcuts import get_object_or_404
 
 from rest_framework import generics, permissions, response, status
 from rest_framework.parsers import JSONParser
@@ -13,7 +11,8 @@ from rest_framework.parsers import JSONParser
 from quiz.models import Game, VoteLog
 from quiz.request_parsers import PlainTextParser
 from quiz.serializers import (
-    GameInfoUpdateSerializer, NewGameSerializer, VotePollSerializer)
+    GameInfoUpdateSerializer, NewGameSerializer, VotePollSerializer,
+    EndGameSerializer)
 
 
 class StartGame(generics.CreateAPIView):
@@ -24,7 +23,7 @@ class StartGame(generics.CreateAPIView):
     # TODO: Check whether we should use some permission classes
 
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer_class()(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         player = serializer.validated_data.get('player')
         game_type = serializer.validated_data.get('game_type')
@@ -41,15 +40,26 @@ class StartGame(generics.CreateAPIView):
             response_data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-def end_game(request, game_id):
-    if not game_id:
-        return Http404('Invalid user id')
+class EndGame(generics.CreateAPIView):
+    queryset = Game.objects.none()
+    authentication_classes = ()
+    permission_classes = (permissions.AllowAny, )
+    serializer_class = EndGameSerializer
+    # TODO: Check whether we should use some permission classes
 
-    game = get_object_or_404(Game, id=game_id)
-    game.finished = True
-    game.save()
-    request.session['game_id'] = None
-    return JsonResponse(model_to_dict(game))
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        game_id = serializer.validated_data.get('id')
+        games = Game.objects.filter(id=game_id)
+        updated = games.update(finished=True)
+        request.session['game_id'] = None
+
+        response_data = model_to_dict(games.first()) if updated else {}
+
+        headers = self.get_success_headers(serializer.data)
+        return response.Response(
+            response_data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class VotePerPoll(generics.CreateAPIView):
