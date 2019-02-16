@@ -1,6 +1,11 @@
-from django.db import models
+import json
+
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
+from django.db import models
+
+from felicitas.aws_connections import get_client
 
 
 class GameType(models.Model):
@@ -17,6 +22,33 @@ class GameType(models.Model):
 
     def __str__(self):
         return self.name
+
+    def _update_game_info(self):
+        try:
+            sns_client = get_client('sns')
+            response = sns_client.publish(
+                TopicArn=settings.SNS_SETTINGS['updateGameInfo']['TopicArn'],
+                Message=json.dumps({
+                    'game_id': self.id,
+                    'game_info': self.description
+                }),
+                Subject='updateGameInfo',
+                MessageStructure='updateGameInfoStructure',
+                MessageAttributes={
+                    'updateGameInfoStructure': {
+                        'StringValue': 'updateGameInfo',
+                        'DataType': 'String'
+                    }
+                }
+            )
+            print('SNS response for game info update: ', response)
+        except Exception:
+            print('Failed to send information about game info update.')
+
+    def save(self, *args, **kwargs):
+        super(GameType, self).save(*args, **kwargs)
+        if self.is_active:
+            self._update_game_info()
 
 
 class BasePoll(models.Model):

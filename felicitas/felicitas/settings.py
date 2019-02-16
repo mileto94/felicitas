@@ -132,3 +132,18 @@ STATIC_URL = '/static/'
 
 
 ADMIN_SITE_HEADER = 'Game Setup Administration'
+
+# ----------- AWS Settings -------------
+
+AWS_ACCESS_KEY_ID = ''
+AWS_SECRET_ACCESS_KEY = ''
+AWS_REGION_NAME = ''
+
+
+SNS_SETTINGS = {
+    'updateGameInfo': {
+        'TopicArn': ''
+    }
+}
+
+# ----------- AWS Settings -------------
