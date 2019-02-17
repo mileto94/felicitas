@@ -1,8 +1,9 @@
 import json
+import random
 
 from django.conf import settings
 from django.core.cache import cache
-from django.db.models import F, Count, Sum
+from django.db.models import F, Sum
 from django.forms.models import model_to_dict
 
 from rest_framework import generics, permissions, response, status
@@ -15,6 +16,34 @@ from quiz.serializers import (
     EndGameSerializer, GameScoreSerializer, GamePollsUpdateSerializer)
 
 
+class InitiateGame(generics.CreateAPIView):
+    queryset = Game.objects.none()
+    authentication_classes = ()
+    permission_classes = (permissions.AllowAny, )
+    serializer_class = NewGameSerializer
+    # TODO: Check whether we should use some permission classes
+
+    def post(self, request, *args, **kwargs):
+        # validate user input
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        player = serializer.validated_data.get('player')
+        game_type = serializer.validated_data.get('game_type')
+
+        # create new game
+        game = Game.objects.create(player=player, game_type=game_type)
+        request.session['game_id'] = game.id
+
+        # prepare response
+        response_data = model_to_dict(game)
+        cache_info_key = settings.GAME_INFO_KEY.format(game_id=game_type)
+        response_data['game_description'] = cache.get(cache_info_key)
+
+        headers = self.get_success_headers(serializer.data)
+        return response.Response(
+            response_data, status=status.HTTP_201_CREATED, headers=headers)
+
+
 class StartGame(generics.CreateAPIView):
     queryset = Game.objects.none()
     authentication_classes = ()
@@ -23,17 +52,25 @@ class StartGame(generics.CreateAPIView):
     # TODO: Check whether we should use some permission classes
 
     def post(self, request, *args, **kwargs):
+        # validate user input
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         player = serializer.validated_data.get('player')
-        game_type = serializer.validated_data.get('game_type')
+        game_id = serializer.validated_data.get('game_id')
 
-        game = Game.objects.create(player=player, game_type=game_type)
+        # get the game
+        game = Game.objects.get(player=player, game_id=game_id)
         request.session['game_id'] = game.id
 
+        # choose first question randomly
+        cache_polls_key = settings.GAME_POLLS_KEY.format(game_id=game_id)
+        available_polls = cache.get(cache_polls_key)
+        first_poll_id = random.choice(available_polls)
+        first_poll = first_poll_id
+
+        # prepare response
         response_data = model_to_dict(game)
-        cache_key = settings.GAME_INFO_KEY.format(game_id=game_type)
-        response_data['game_description'] = cache.get(cache_key)
+        response_data['poll'] = first_poll
 
         headers = self.get_success_headers(serializer.data)
         return response.Response(

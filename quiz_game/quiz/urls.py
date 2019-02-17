@@ -17,11 +17,12 @@ from django.urls import path
 
 from quiz.views import (
     StartGame, EndGame, VotePerPoll, RetrieveGameInfoUpdate, RankedScores,
-    RetrieveGamePollsUpdate
+    RetrieveGamePollsUpdate, InitiateGame
 )
 
 
 urlpatterns = [
+    path('initiate-game/', InitiateGame.as_view(), name='initiate-game'),
     path('start-game/', StartGame.as_view(), name='start-game'),
     path('end-game/', EndGame.as_view(), name='end-game'),
     path('poll-vote/', VotePerPoll.as_view(), name='poll-vote'),
