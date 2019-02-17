@@ -44,6 +44,15 @@ def get_game_description(request, game_id):
 
 def get_active_games(request):
     """Get info of selected game type."""
-    games = list(GameType.objects.filter(is_active=True).values(
-        'name', 'description', 'polls_count'))
-    return JsonResponse({'games': games})
+    games = GameType.objects.filter(is_active=True).only(
+        'name', 'description', 'polls_count', 'image')
+    data = [
+        {
+            'name': game.name,
+            'description': game.description,
+            'polls_count': game.polls_count,
+            'image': game.image.url if game.image else 'img/portfolio/02-thumbnail.jpg'
+        }
+        for game in games
+    ]
+    return JsonResponse({'games': data})

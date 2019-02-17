@@ -13,6 +13,7 @@ class GameType(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=False)
     polls_count = models.PositiveSmallIntegerField(default=1)
+    image = models.FileField(blank=True, null=True)
 
     class Meta:
         verbose_name = 'Game Type'
