@@ -40,3 +40,10 @@ def get_game_description(request, game_id):
     """Get info of selected game type."""
     game_type = get_object_or_404(GameType, id=game_id)
     return JsonResponse({'game_info': game_type.description, 'game_id': game_id})
+
+
+def get_active_games(request):
+    """Get info of selected game type."""
+    games = list(GameType.objects.filter(is_active=True).values(
+        'name', 'description', 'polls_count'))
+    return JsonResponse({'games': games})

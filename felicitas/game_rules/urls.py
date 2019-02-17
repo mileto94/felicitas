@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.urls import path
 from game_rules.views import (
-    get_next_poll, get_polls_per_game_type, get_poll_help, get_game_description)
+    get_next_poll, get_polls_per_game_type, get_poll_help, get_game_description,
+    get_active_games)
 
 
 urlpatterns = [
@@ -23,4 +24,5 @@ urlpatterns = [
     path('all-polls/<int:game_id>/', get_polls_per_game_type, name='all-polls'),
     path('poll-help/<int:poll_id>/', get_poll_help, name='poll-help'),
     path('game-info/<int:game_id>/', get_game_description, name='game-info'),
+    path('games-list/', get_active_games, name='games-list'),
 ]
