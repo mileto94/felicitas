@@ -27,9 +27,8 @@
 </head>
 
 <body id="page-top">
-
   <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-shrink" id="mainNav">
     <div class="container">
       <a class="navbar-brand js-scroll-trigger" href="javascript:window.location.href='index.html';">Felicitas Home</a>
       <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,10 +38,10 @@
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav text-uppercase ml-auto">
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="#services">Platform</a>
+            <a class="nav-link js-scroll-trigger" href="javascript:window.location.href='index.html#services';">Platform</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="#portfolio">Game Types</a>
+            <a class="nav-link js-scroll-trigger" href="javascript:window.location.href='index.html#portfolio';">Game Types</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="javascript:window.location.href='register.html';">Register</a>
@@ -50,73 +49,26 @@
           <li class="nav-item">
             <a class="nav-link" href="javascript:window.location.href='login.html';">Log in</a>
           </li>
-          <!-- <li class="nav-item hidden">
-            <a class="nav-link" href="javascript:window.location.href='logout.html';">Log out</a>
-          </li> -->
         </ul>
       </div>
     </div>
   </nav>
-
-  <!-- Header -->
-  <header class="masthead">
-    <div class="container">
-      <div class="intro-text">
-        <div class="intro-lead-in">Welcome To Our Platform!</div>
-        <div class="intro-heading text-uppercase">It's Nice To Meet You</div>
-        <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="#services">Tell Me More</a>
-      </div>
-    </div>
-  </header>
 
   <!-- Services -->
   <section id="services">
     <div class="container">
       <div class="row">
         <div class="col-lg-12 text-center">
-          <h2 class="section-heading text-uppercase">Platform</h2>
-          <h3 class="section-subheading text-muted">We provide many game types.</h3>
+          <h2 class="section-heading text-uppercase" id="game-name"></h2>
+          <h3 class="section-subheading text-muted">Question <span id="polls-count"></span> of <span id="total-polls"></span></h3>
         </div>
       </div>
       <div class="row text-center">
-        <div class="col-md-4">
-          <span class="fa-stack fa-4x">
-            <i class="fas fa-circle fa-stack-2x text-primary"></i>
-            <i class="fas fa-vote-yea fa-stack-1x fa-inverse"></i>
-          </span>
-          <h4 class="service-heading">Single correct answer</h4>
-          <p class="text-muted">A question has many answers and only one is correct.</p>
-        </div>
-        <div class="col-md-4">
-          <span class="fa-stack fa-4x">
-            <i class="fas fa-circle fa-stack-2x text-primary"></i>
-            <i class="fas fa-lock fa-stack-1x fa-inverse"></i>
-          </span>
-          <h4 class="service-heading">Binary questionnaires</h4>
-          <p class="text-muted">A question has only 2 available answers and only one is correct.</p>
-        </div>
-        <div class="col-md-4">
-          <span class="fa-stack fa-4x">
-            <i class="fas fa-circle fa-stack-2x text-primary"></i>
-            <i class="fas fa-laptop fa-stack-1x fa-inverse"></i>
-          </span>
-          <h4 class="service-heading">User input</h4>
-          <p class="text-muted">A question can be answered by entering single value.</p>
+        <div class="col-md-12">
+          <h4 class="service-heading" id="poll-name"></h4>
+          <p class="text-muted" id="poll-help"></p>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- Portfolio Grid -->
-  <section class="bg-light" id="portfolio">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12 text-center">
-          <h2 class="section-heading text-uppercase">Game Types</h2>
-          <h3 class="section-subheading text-muted">Are you ready to check your knowledge?</h3>
-        </div>
-      </div>
-      <div class="row" id="games-list"></div>
     </div>
   </section>
 
@@ -137,10 +89,6 @@
     </div>
   </footer>
 
-  <!-- Portfolio Modals -->
-
-  <div id="modals-list"></div>
-
   <!-- Bootstrap core JavaScript -->
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -153,8 +101,7 @@
   <script src="js/contact_me.js"></script>
 
   <!-- Custom scripts for this template -->
-  <script src="js/agency.min.js"></script>
-  <script src="js/landing_page.js"></script>
+  <script src="js/play_game.js"></script>
 </body>
 
 </html>

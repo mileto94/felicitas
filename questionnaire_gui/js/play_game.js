@@ -1,7 +1,12 @@
 (function($) {
     "use strict"; // Start of use strict
 
-    $.ajax('http://localhost:8000/games-list/').then(function (data) {
+    $('#game-name').text(`${localStorage.getItem('game_type_name')}`);
+    $('#polls-count').text(`${localStorage.getItem('polls_count')}`);
+    $('#total-polls').text(`${localStorage.getItem('game_polls_count')}`);
+
+
+    $.ajax('http://localhost:8001/games-list/').then(function (data) {
        $.each(data.games, function (index, game) {
            $('#games-list').append(`
                 <div class="col-md-4 col-sm-6 portfolio-item">
@@ -57,9 +62,8 @@
 })(jQuery);
 
 function start_game(game_type_id, game_name, game_polls_count) {
-    localStorage.setItem('game_type_id', game_type_id);
-    localStorage.setItem('game_type_name', game_name);
-    localStorage.setItem('game_polls_count', game_polls_count);
-    localStorage.setItem('polls_count', 0);
-    window.location.href='play_game.html';
+    // localStorage.setItem('game_type_id', game_type_id);
+    // localStorage.setItem('game_type_name', game_name);
+    // localStorage.setItem('game_polls_count', game_polls_count);
+    // window.location.href='play_game.html';
 }

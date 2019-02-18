@@ -1,4 +1,4 @@
-.text-muted {
+#games-list .text-muted {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
