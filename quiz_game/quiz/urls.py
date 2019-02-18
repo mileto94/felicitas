@@ -17,7 +17,7 @@ from django.urls import path
 
 from quiz.views import (
     StartGame, EndGame, VotePerPoll, RetrieveGameInfoUpdate, RankedScores,
-    RetrieveGamePollsUpdate, InitiateGame
+    RetrieveGamePollsUpdate, InitiateGame, validate_token
 )
 
 
@@ -29,4 +29,5 @@ urlpatterns = [
     path('game-info-update/', RetrieveGameInfoUpdate.as_view(), name='game-info-update'),
     path('ranked-scores/', RankedScores.as_view(), name='ranked-scores'),
     path('game-polls-update/', RetrieveGamePollsUpdate.as_view(), name='game-polls-update'),
+    path('validate-token/', validate_token, name='validate-token'),
 ]

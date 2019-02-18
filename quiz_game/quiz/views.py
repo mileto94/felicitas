@@ -1,10 +1,12 @@
 import json
 import random
+import requests
 
 from django.conf import settings
 from django.core.cache import cache
 from django.db.models import F, Sum
 from django.forms.models import model_to_dict
+from django.http.response import JsonResponse
 
 from rest_framework import generics, permissions, response, status
 from rest_framework.parsers import JSONParser
@@ -14,6 +16,7 @@ from quiz.request_parsers import PlainTextParser
 from quiz.serializers import (
     GameInfoUpdateSerializer, NewGameSerializer, VotePollSerializer,
     EndGameSerializer, GameScoreSerializer, GamePollsUpdateSerializer)
+from django.views.decorators.csrf import csrf_exempt
 
 
 class InitiateGame(generics.CreateAPIView):
@@ -158,3 +161,17 @@ class RetrieveGamePollsUpdate(generics.CreateAPIView):
         cache.set(cache_key, game_polls)
         print(cache.get(cache_key))
         return response.Response({'status': 'OK'}, status=status.HTTP_200_OK)
+
+
+@csrf_exempt
+def validate_token(request):
+    token = request.POST.get('token')
+    username = request.POST.get('username')
+    if request.method == 'POST' and token and username:
+        url = 'http://localhost:8002/verify-token/'
+        response = requests.post(url, data=request.POST, timeout=0.05)  # in sec
+        if response.status_code == 200:
+            user_id = response.json().get('user_id')
+            cache.set(f'user-token-{token}', user_id)
+        return JsonResponse(response.json(), status=response.status_code)
+    return JsonResponse({'is_active': False}, status=400)
