@@ -48,6 +48,7 @@ def get_active_games(request):
         'name', 'description', 'polls_count', 'image')
     data = [
         {
+            'id': game.id,
             'name': game.name,
             'description': game.description,
             'polls_count': game.polls_count,
