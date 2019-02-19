@@ -155,6 +155,8 @@ REST_FRAMEWORK = {
 
 GAME_INFO_KEY = 'game-{game_id}-info'
 GAME_POLLS_KEY = 'game-{game_id}-polls'
+POLL_DATA_KEY = 'poll-id-{id}'
+USER_TOKEN_KEY = 'user-token-{token}'
 
 
 CACHES = {

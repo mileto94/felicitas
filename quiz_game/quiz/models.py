@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 
@@ -9,6 +10,7 @@ class Game(models.Model):
     game_type = models.PositiveIntegerField(default=0)
     result = models.IntegerField(default=0)
     finished = models.BooleanField(default=False)
+    polls_list = ArrayField(models.PositiveIntegerField(), blank=True, null=True)
 
     class Meta:
         verbose_name = 'Game'

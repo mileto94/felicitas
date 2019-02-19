@@ -19,7 +19,7 @@ from quiz.serializers import (
 from django.views.decorators.csrf import csrf_exempt
 
 
-class InitiateGame(generics.CreateAPIView):
+class StartGame(generics.CreateAPIView):
     queryset = Game.objects.none()
     authentication_classes = ()
     permission_classes = (permissions.AllowAny, )
@@ -37,43 +37,27 @@ class InitiateGame(generics.CreateAPIView):
         game = Game.objects.create(player=player, game_type=game_type)
         request.session['game_id'] = game.id
 
-        # prepare response
-        response_data = model_to_dict(game)
-        cache_info_key = settings.GAME_INFO_KEY.format(game_id=game_type)
-        response_data['game_description'] = cache.get(cache_info_key)
-
-        headers = self.get_success_headers(serializer.data)
-        return response.Response(
-            response_data, status=status.HTTP_201_CREATED, headers=headers)
-
-
-class StartGame(generics.CreateAPIView):
-    queryset = Game.objects.none()
-    authentication_classes = ()
-    permission_classes = (permissions.AllowAny, )
-    serializer_class = NewGameSerializer
-    # TODO: Check whether we should use some permission classes
-
-    def post(self, request, *args, **kwargs):
-        # validate user input
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        player = serializer.validated_data.get('player')
-        game_id = serializer.validated_data.get('game_id')
-
-        # get the game
-        game = Game.objects.get(player=player, game_id=game_id)
-        request.session['game_id'] = game.id
-
-        # choose first question randomly
-        cache_polls_key = settings.GAME_POLLS_KEY.format(game_id=game_id)
+        cache_polls_key = settings.GAME_POLLS_KEY.format(game_id=game_type)
         available_polls = cache.get(cache_polls_key)
         first_poll_id = random.choice(available_polls)
-        first_poll = first_poll_id
+
+        # get data for the poll from cache
+        first_poll_key = settings.POLL_DATA_KEY.format(id=first_poll_id)
+        poll_data = cache.get(first_poll_key)
+        if poll_data:
+            poll_data = json.loads(poll_data)
+        else:
+            url = f'http://localhost:8000/next-poll/{game_type}/{first_poll_id}/'
+            poll_response = requests.get(url, data=request.POST, timeout=0.05)  # in sec
+            if poll_response.status_code == 200:
+                poll_data = poll_response.json()
+                cache.set(first_poll_key, json.dumps(poll_data))
+
+        # TODO: Select all polls randomly here!!!
 
         # prepare response
         response_data = model_to_dict(game)
-        response_data['poll'] = first_poll
+        response_data['poll'] = poll_data
 
         headers = self.get_success_headers(serializer.data)
         return response.Response(
@@ -172,6 +156,20 @@ def validate_token(request):
         response = requests.post(url, data=request.POST, timeout=0.05)  # in sec
         if response.status_code == 200:
             user_id = response.json().get('user_id')
-            cache.set(f'user-token-{token}', user_id)
+            user_key = settings.USER_TOKEN_KEY.format(token=token)
+            cache.set(user_key, user_id)
         return JsonResponse(response.json(), status=response.status_code)
     return JsonResponse({'is_active': False}, status=400)
+
+
+@csrf_exempt
+def log_out(request):
+    token = request.POST.get('token')
+    user_id = request.POST.get('user_id')
+    if request.method == 'POST' and token and user_id:
+        user_key = settings.USER_TOKEN_KEY.format(token=token)
+        cached_user_id = cache.get(user_key)
+        if str(user_id) == str(cached_user_id):
+            cache.delete(user_key)
+            return JsonResponse({'status': 'OK'}, status=200)
+    return JsonResponse({'status': 'fail'}, status=400)
