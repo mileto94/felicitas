@@ -40,7 +40,7 @@
                             <p class="item-intro text-muted">Total questions: ${game.polls_count}</p>
                             <img class="img-fluid d-block mx-auto" src="${game.image}" alt="">
                             <p>${game.description}</p>
-                            <button class="btn btn-primary" type="button" onclick="start_game(${game.id}, '${game.name}', ${game.polls_count})">
+                            <button class="btn btn-primary" type="button" onclick="startGame(${game.id}, '${game.name}', ${game.polls_count})">
                               <i class="fas fa-play-circle"></i>
                               Start Game</button>
                           </div>
@@ -56,10 +56,37 @@
     });
 })(jQuery);
 
-function start_game(game_type_id, game_name, game_polls_count) {
+function startGame(game_type_id, game_name, game_polls_count) {
     localStorage.setItem('game_type_id', game_type_id);
     localStorage.setItem('game_type_name', game_name);
     localStorage.setItem('game_polls_count', game_polls_count);
     localStorage.setItem('polls_count', 0);
     window.location.href='play_game.html';
+}
+
+function logOut() {
+    $.ajax({
+        url: 'http://localhost:8002/rest-auth/logout/',
+        method: 'POST',
+        data: {},
+    }).done(function (data) {
+        $.ajax({
+            url: 'http://localhost:8001/log-out/',
+            method: 'POST',
+            data: {
+                'user_id': localStorage.getItem('user_id'),
+                'token': localStorage.getItem('user_key'),
+            },
+        }).done(function (data) {
+           alert('You have successfully logged out.');
+           localStorage.clear();
+        }).fail(function (data) {
+           alert('Sorry, There is an error in the log out process. Please, try again.');
+           console.log(data);
+        });
+       alert('You have successfully logged out.');
+    }).fail(function (data) {
+       alert('Sorry, There is an error in the log out process.');
+       console.log(data);
+    });
 }
