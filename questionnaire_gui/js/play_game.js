@@ -5,65 +5,29 @@
     $('#polls-count').text(`${localStorage.getItem('polls_count')}`);
     $('#total-polls').text(`${localStorage.getItem('game_polls_count')}`);
 
+    $.ajax({
+        url: 'http://localhost:8001/start-game/',
+        method: 'POST',
+        data: JSON.stringify({
+            "token": localStorage.getItem('user_key'),
+            "player": localStorage.getItem('user_id'),
+            "game_type": localStorage.getItem('game_type_id')
+        }),
+        dataType: 'json',
+        contentType: 'application/json'
+    }).then(function (data) {
+       $('#poll-name').text(data.poll.title);
 
-    $.ajax('http://localhost:8001/games-list/').then(function (data) {
-       $.each(data.games, function (index, game) {
-           $('#games-list').append(`
-                <div class="col-md-4 col-sm-6 portfolio-item">
-                  <a class="portfolio-link" data-toggle="modal" href="#portfolioModal${game.id}">
-                    <div class="portfolio-hover">
-                      <div class="portfolio-hover-content">
-                        <i class="fas fa-plus fa-3x"></i>
-                      </div>
-                    </div>
-                    <img class="img-fluid" src="${game.image}" alt="${game.name} logo">
-                  </a>
-                  <div class="portfolio-caption">
-                    <h4>${game.name}</h4>
-                    <p class="text-muted">${game.description}</p>
-                  </div>
+       $.each(data.poll.answers, function (index, answer) {
+           $('#poll-answers').append(`
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios${answer.id}" value="${answer.title}">
+                  <label class="form-check-label" for="exampleRadios${answer.title}">
+                    ${answer.title}
+                  </label>
                 </div>`
-           );
-
-
-           $('#modals-list').append(`
-              <!-- Modal 1 -->
-              <div class="portfolio-modal modal fade" id="portfolioModal${game.id}" tabindex="-1" role="dialog" aria-hidden="true">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="close-modal" data-dismiss="modal">
-                      <div class="lr">
-                        <div class="rl"></div>
-                      </div>
-                    </div>
-                    <div class="container">
-                      <div class="row">
-                        <div class="col-lg-8 mx-auto">
-                          <div class="modal-body">
-                            <!-- Project Details Go Here -->
-                            <h2 class="text-uppercase">${game.name}</h2>
-                            <p class="item-intro text-muted">Total questions: ${game.polls_count}</p>
-                            <img class="img-fluid d-block mx-auto" src="${game.image}" alt="">
-                            <p>${game.description}</p>
-                            <button class="btn btn-primary" type="button" onclick="start_game(${game.id}, '${game.name}', ${game.polls_count})">
-                              <i class="fas fa-play-circle"></i>
-                              Start Game</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>`
            );
 
         });
     });
 })(jQuery);
-
-function start_game(game_type_id, game_name, game_polls_count) {
-    // localStorage.setItem('game_type_id', game_type_id);
-    // localStorage.setItem('game_type_name', game_name);
-    // localStorage.setItem('game_polls_count', game_polls_count);
-    // window.location.href='play_game.html';
-}
