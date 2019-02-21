@@ -88,6 +88,7 @@ class AnswerAdminInline(admin.TabularInline):
 class PollAdmin(admin.ModelAdmin):
     list_display = ('title', 'game', 'category', 'difficulty', 'poll_type')
     inlines = [AnswerAdminInline, ]
+    list_per_page = 30
 
     def delete_queryset(self, request, queryset):
         query_ids = list(queryset.values_list('id', flat=True))

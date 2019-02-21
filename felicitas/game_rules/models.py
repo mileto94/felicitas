@@ -3,6 +3,7 @@ import json
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.core.validators import MaxValueValidator
 from django.db import models
 from django.forms.models import model_to_dict
 
@@ -14,7 +15,7 @@ class GameType(models.Model):
     description = models.TextField(blank=True, null=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=False)
-    polls_count = models.PositiveSmallIntegerField(default=1)
+    polls_count = models.PositiveSmallIntegerField(default=1, validators=(MaxValueValidator(100),))
     image = models.FileField(blank=True, null=True)
 
     class Meta:
@@ -94,8 +95,8 @@ class BasePoll(models.Model):
     difficulty = models.CharField(max_length=30, choices=POLL_DIFFICULTIES, help_text='Select poll type from the available types')
     poll_type = models.CharField(max_length=30, choices=POLL_TYPES, help_text='Help text for clarifying the poll')
     help_text = models.TextField(help_text='Enter help text for the poll', blank=True, null=True)
-    positive_marks = models.PositiveSmallIntegerField(default=1, help_text='')
-    negative_marks = models.SmallIntegerField(default=0, help_text='')
+    positive_marks = models.PositiveSmallIntegerField(default=1, help_text='Enter positive number')
+    negative_marks = models.SmallIntegerField(default=0, help_text='Enter negative number')
     created_by = models.ForeignKey(User, on_delete=models.SET_DEFAULT, default=1)
     game = models.ForeignKey('GameType', on_delete=models.SET_NULL, blank=True, null=True)
     # start_time = models.DateTimeField(
