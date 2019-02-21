@@ -3,6 +3,7 @@ import json
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from django.forms.models import model_to_dict
 
 from felicitas.aws_connections import get_client
 
@@ -113,7 +114,8 @@ class BasePoll(models.Model):
                 TopicArn=settings.SNS_SETTINGS['updateGamePolls']['TopicArn'],
                 Message=json.dumps({
                     'game_id': self.id,
-                    'polls': list(self.game.poll_set.values_list('id', flat=True))
+                    'polls': list(self.game.poll_set.values_list('id', flat=True)),
+                    'count': self.game.polls_count
                 }),
                 Subject='updateGamePolls',
                 MessageStructure='updateGamePollsStructure',
@@ -159,7 +161,11 @@ class Poll(BasePoll):
         "poll_type": "multiple"
     }
     """
-    pass
+    def serialize_poll(self):
+        data = model_to_dict(self)
+        answers = [model_to_dict(ans) for ans in self.answers.all()]
+        data['answers'] = answers
+        return data
 
 
 class Answer(models.Model):

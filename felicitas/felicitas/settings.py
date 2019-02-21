@@ -182,10 +182,13 @@ CORS_ALLOW_METHODS = (
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '/var/tmp/django_cache',
+        'LOCATION': '/home/milka/PycharmProjects/felicitas_repo/cache/django_cache',
         'TIMEOUT': None,
         'OPTIONS': {
             'MAX_ENTRIES': 10000
         }
     }
 }
+
+
+POLL_DATA_KEY = 'poll-id-{id}'
