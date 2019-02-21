@@ -23,13 +23,14 @@
             }).done(function (data) {
                alert('You have successfully logged in.');
                localStorage.setItem('user_id', data.user_id);
+               window.location.href = 'index.html';
             }).fail(function (data) {
-               alert('Sorry, There is an error in the registration process. Please, try again.');
+               alert('Sorry, There is an error in the login process. Please, try again.');
                console.log(data);
             });
            alert('You have successfully logged in.');
         }).fail(function (data) {
-           alert('Sorry, There is an error in the registration process.');
+           alert('Sorry, There is an error in the login process.');
            console.log(data);
         });
     });

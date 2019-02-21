@@ -2,8 +2,13 @@
     "use strict"; // Start of use strict
 
     $('#game-name').text(`${localStorage.getItem('game_type_name')}`);
-    $('#polls-count').text(`${localStorage.getItem('polls_count')}`);
+    $('#polls-counter').text(`${localStorage.getItem('polls_counter')}`);
     $('#total-polls').text(`${localStorage.getItem('game_polls_count')}`);
+
+    if(!localStorage.getItem('user_id')) {
+        alert('You have to register or login in order to play');
+        window.location.href = 'login.html';
+    }
 
     $.ajax({
         url: 'http://localhost:8001/start-game/',
@@ -20,8 +25,10 @@
         localStorage.setItem('result', data.result);
         localStorage.setItem('fished', data.finished);
         localStorage.setItem('poll_id', data.poll.id);
+        localStorage.setItem('polls_counter', data.polls_counter);
+        $('#polls-counter').text(data.polls_counter);
 
-       $('#poll-name').text(data.poll.title);
+        $('#poll-name').text(data.poll.title);
 
        $.each(data.poll.answers, function (index, answer) {
            $('#poll-answers').append(`
@@ -34,6 +41,8 @@
            );
 
         });
+    }).catch(function (data) {
+        console.log(data);
     });
 
 
@@ -67,18 +76,21 @@
         localStorage.setItem('result', data.result);
         localStorage.setItem('fished', data.finished);
         localStorage.setItem('poll_id', data.poll.id);
+        localStorage.setItem('polls_counter', data.polls_counter);
 
-       $('#poll-name').text(data.poll.title);
+        $('#poll-name').text(data.poll.title);
+        $('#polls-counter').text(`${localStorage.getItem('polls_counter')}`);
 
-       $.each(data.poll.answers, function (index, answer) {
-           $('#poll-answers').append(`
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios${answer.id}" value="${answer.title}">
-                  <label class="form-check-label" for="exampleRadios${answer.title}">
-                    ${answer.title}
-                  </label>
-                </div>`
-           );
+        $('#poll-answers').text('');
+        $.each(data.poll.answers, function (index, answer) {
+            $('#poll-answers').append(`
+                 <div class="form-check">
+                   <input class="form-check-input answer" type="radio" name="exampleRadios" id="exampleRadios${answer.id}" value="${answer.title}">
+                   <label class="form-check-label" for="exampleRadios${answer.title}">
+                     ${answer.title}
+                   </label>
+                 </div>`
+            );
 
         });
     });

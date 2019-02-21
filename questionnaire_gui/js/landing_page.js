@@ -60,7 +60,7 @@ function startGame(game_type_id, game_name, game_polls_count) {
     localStorage.setItem('game_type_id', game_type_id);
     localStorage.setItem('game_type_name', game_name);
     localStorage.setItem('game_polls_count', game_polls_count);
-    localStorage.setItem('polls_count', 0);
+    localStorage.setItem('polls_counter', 0);
     window.location.href='play_game.html';
 }
 

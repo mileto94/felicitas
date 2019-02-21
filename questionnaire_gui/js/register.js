@@ -15,7 +15,8 @@
             },
         }).done(function (data) {
             localStorage.setItem('user_key', data.key);
-           alert('You have successfully registered.');
+           alert('You have successfully registered. You should log in now.');
+           window.location.href = 'login.html';
         }).fail(function (data) {
            alert('Sorry, There is an error in the registration process.');
            console.log(data)
