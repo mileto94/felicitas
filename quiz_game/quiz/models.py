@@ -1,5 +1,10 @@
+import json
+
+from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+
+from quiz.aws_connections import get_client
 
 
 class Game(models.Model):
@@ -18,6 +23,28 @@ class Game(models.Model):
 
     def __str__(self):
         return f'ID: {self.id} by player {self.player}'
+
+    def _collect_game_polls(self):
+        try:
+            sns_client = get_client('sns')
+            response = sns_client.publish(
+                TopicArn=settings.SNS_SETTINGS['collectGamePolls']['TopicArn'],
+                Message=json.dumps({
+                    'polls': self.polls_list,
+                }),
+                Subject='collectGamePolls',
+                MessageStructure='collectGamePollsStructure',
+                MessageAttributes={
+                    'collectGamePollsStructure': {
+                        'StringValue': 'collectGamePolls',
+                        'DataType': 'String'
+                    }
+                }
+            )
+            print('SNS response for collectGamePolls: ', response)
+        except Exception as e:
+            print('Failed to send information about collectGamePolls.')
+            print(e)
 
 
 class VoteLog(models.Model):
