@@ -54,7 +54,14 @@
         dataType: 'json',
         contentType: 'application/json'
     }).then(function (data) {
-        // TODO: handle end game!!!!!
+
+        if(data.finished) {
+            if(confirm("Your game is over. Do you want to see all results?")) {
+                window.location.href = 'results.html';
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
         console.log(data);
         localStorage.setItem('game_id', data.id);
         localStorage.setItem('result', data.result);
