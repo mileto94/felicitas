@@ -65,7 +65,7 @@
     }).then(function (data) {
 
         if(data.finished) {
-            if(confirm("Your game is over. Do you want to see all results?")) {
+            if(confirm(`Congratulations! You've completed the game with score ${localStorage.getItem('result')}. Do you want to see all results?`)) {
                 window.location.href = 'results.html';
             } else {
                 window.location.href = 'index.html';
