@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -16,3 +17,9 @@ def verify_token(request):
                 return JsonResponse({'is_valid': True, 'user_id': tokens.first().user_id}, status=200)
     return JsonResponse({'is_valid': False, 'user_id': None}, status=400)
 
+
+def get_players_data(request, *args, **kwargs):
+    data = dict(User.objects.filter(
+        id__in=request.GET.getlist('player_id')
+    ).values_list('id', 'username'))
+    return JsonResponse({'players': data})
