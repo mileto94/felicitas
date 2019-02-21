@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
-from quiz.aws_connections import get_client
+from quiz_game.aws_connections import get_client
 
 
 class Game(models.Model):

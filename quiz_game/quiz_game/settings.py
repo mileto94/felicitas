@@ -157,15 +157,15 @@ GAME_INFO_KEY = 'game-{game_id}-info'
 GAME_POLLS_KEY = 'game-{game_id}-polls'
 POLL_DATA_KEY = 'poll-id-{id}'
 USER_TOKEN_KEY = 'user-token-{token}'
-
+CACHE_TIMEOUT = 60 * 60 * 24 * 7  # 7 days
+CACHE_USER_TIMEOUT = 60 * 60 * 24  # 1 day
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '/home/milka/PycharmProjects/felicitas_repo/cache/django_cache',
-        'TIMEOUT': None,
-        'OPTIONS': {
-            'MAX_ENTRIES': 10000
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     }
 }
@@ -177,3 +177,16 @@ CORS_ALLOW_METHODS = (
     'GET',
     'POST',
 )
+
+import quiz_game.aws_credentials as creds
+
+AWS_ACCESS_KEY_ID = creds.AWS_ACCESS_KEY_ID or ''
+AWS_SECRET_ACCESS_KEY = creds.AWS_SECRET_ACCESS_KEY or ''
+AWS_REGION_NAME = creds.AWS_REGION_NAME or ''
+
+
+SNS_SETTINGS = {
+    'collectGamePolls': {
+        'TopicArn': creds.SNS_SETTINGS['collectGamePolls']['TopicArn'] or ''
+    }
+}

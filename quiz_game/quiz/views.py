@@ -42,14 +42,15 @@ class StartGame(generics.CreateAPIView):
         request.session['game_id'] = game.id
 
         cache_polls_key = settings.GAME_POLLS_KEY.format(game_id=game_type_id)
-        game_data = cache.get(cache_polls_key, {})
+        game_data = json.loads(cache.get(cache_polls_key, "{}"))
         available_polls = game_data.get('polls', [])
         total_count = game_data.get('count')
 
         if not available_polls:
-            cache_key = settings.GAME_INFO_KEY.format(game_id=game_type_id)
-            available_polls = get_available_polls(game_type_id, request.POST)
-            cache.set(cache_key, available_polls)
+            poll_data = get_available_polls(game_type_id, request.POST)
+            cache.set(cache_polls_key, json.dumps(poll_data), timeout=None)
+
+            available_polls, total_count = poll_data.get('polls', []), poll_data.get('count', 1)
 
         # select randomly the polls for this game
         try:
@@ -76,7 +77,7 @@ class StartGame(generics.CreateAPIView):
             poll_data = json.loads(poll_data)
         else:
             poll_data = get_poll_data(game_type_id, first_poll_id, request.POST)
-            cache.set(first_poll_key, json.dumps(poll_data))
+            cache.set(first_poll_key, json.dumps(poll_data), timeout=settings.CACHE_TIMEOUT)
 
         # prepare response
         response_data = model_to_dict(game)
@@ -160,7 +161,7 @@ class RetrieveGameInfoUpdate(generics.CreateAPIView):
         game_id = serializer.validated_data.get('game_id')
         game_info = serializer.validated_data.get('game_info')
         cache_key = settings.GAME_INFO_KEY.format(game_id=game_id)
-        cache.set(cache_key, game_info)
+        cache.set(cache_key, game_info, timeout=None)
         print(cache.get(cache_key))
         return response.Response({'status': 'OK'}, status=status.HTTP_200_OK)
 
@@ -193,7 +194,7 @@ class RetrieveGamePollsUpdate(generics.CreateAPIView):
             'polls': game_polls,
             'count': polls_count
         }
-        cache.set(cache_key, json.dumps(game_data))
+        cache.set(cache_key, json.dumps(game_data), timeout=None)
         print(cache.get(cache_key))
         return response.Response({'status': 'OK'}, status=status.HTTP_200_OK)
 
@@ -208,7 +209,7 @@ def validate_token(request):
         if response.status_code == 200:
             user_id = response.json().get('user_id')
             user_key = settings.USER_TOKEN_KEY.format(token=token)
-            cache.set(user_key, user_id)
+            cache.set(user_key, user_id, timeout=settings.CACHE_USER_TIMEOUT)
         return JsonResponse(response.json(), status=response.status_code)
     return JsonResponse({'is_active': False}, status=400)
 
