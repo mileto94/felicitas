@@ -160,7 +160,7 @@ CORS_ALLOW_METHODS = (
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '/var/tmp/user_manager',
+        'LOCATION': '/home/milka/PycharmProjects/felicitas_repo/cache/user_manager',
         'TIMEOUT': None,
         'OPTIONS': {
             'MAX_ENTRIES': 10000
