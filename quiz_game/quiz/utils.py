@@ -38,3 +38,29 @@ def get_poll(game_type_id, poll_id):
     if not poll_data:
         poll_data = get_poll_data(game_type_id, poll_id)
     return poll_data
+
+
+def get_players_data(players):
+    """Get data for players by id via API."""
+
+    users_response = requests.get(
+        url='http://localhost:8002/user-data/',
+        params={'player_id': players},
+        timeout=0.1  # in sec
+    )
+    if users_response.status_code == 200:
+        return users_response.json().get('players')
+    return {}
+
+
+def get_games_data(games):
+    """Get data for game name by id via API."""
+
+    games_response = requests.get(
+        url='http://localhost:8000/games-data/',
+        params={'game_id': games},
+        timeout=0.1  # in sec
+    )
+    if games_response.status_code == 200:
+        return games_response.json().get('games')
+    return {}

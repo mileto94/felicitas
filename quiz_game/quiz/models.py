@@ -10,7 +10,6 @@ from quiz_game.aws_connections import get_client
 class Game(models.Model):
     """Represent each player's games."""
 
-    # TODO: Save in Redis info for available polls per game
     player = models.PositiveIntegerField()
     game_type = models.PositiveIntegerField(default=0)
     result = models.IntegerField(default=0)

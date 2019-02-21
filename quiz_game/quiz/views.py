@@ -4,7 +4,7 @@ import requests
 
 from django.conf import settings
 from django.core.cache import cache
-from django.db.models import F, Sum
+from django.db.models import Max
 from django.forms.models import model_to_dict
 from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -18,7 +18,8 @@ from quiz.request_parsers import PlainTextParser
 from quiz.serializers import (
     GameInfoUpdateSerializer, NewGameSerializer, VotePollSerializer,
     EndGameSerializer, GameScoreSerializer, GamePollsUpdateSerializer)
-from quiz.utils import get_available_polls, get_poll
+from quiz.utils import (
+    get_available_polls, get_poll, get_players_data, get_games_data)
 
 
 class StartGame(generics.CreateAPIView):
@@ -86,7 +87,6 @@ class EndGame(generics.CreateAPIView):
     authentication_classes = ()
     permission_classes = (permissions.AllowAny, )
     serializer_class = EndGameSerializer
-    # TODO: Check whether we should use some permission classes
 
     def post(self, request, *args, **kwargs):
         is_authenticated(request)
@@ -190,9 +190,30 @@ class RetrieveGameInfoUpdate(generics.CreateAPIView):
 
 
 class RankedScores(generics.ListAPIView):
-    queryset = Game.objects.filter(finished=True).values(
-        'game_type', 'player').annotate(result=Sum('result')).order_by('-result')
+    queryset = Game.objects.none()
     serializer_class = GameScoreSerializer
+
+    def get(self, request, *args, **kwargs):
+        queue = Game.objects.filter(finished=True)
+        if kwargs.get('game_type_id'):
+            queue = queue.filter(game_type=kwargs.get('game_type_id'))
+
+        data = list(queue.values('game_type', 'player').annotate(
+            result=Max('result')).order_by('-result')[:30])
+
+        user_ids = []
+        game_type_ids = []
+        for game in data:
+            user_ids.append(game['player'])
+            game_type_ids.append(game['game_type'])
+
+        players = get_players_data(user_ids)
+        game_types = get_games_data(game_type_ids)
+
+        for game in data:
+            game['player'] = players.get(str(game['player']), game['player'])
+            game['game_type'] = game_types.get(str(game['game_type']), game['game_type'])
+        return response.Response(data)
 
 
 class RetrieveGamePollsUpdate(generics.CreateAPIView):

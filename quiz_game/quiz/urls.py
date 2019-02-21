@@ -27,6 +27,7 @@ urlpatterns = [
     path('poll-vote/', VotePerPoll.as_view(), name='poll-vote'),
     path('game-info-update/', RetrieveGameInfoUpdate.as_view(), name='game-info-update'),
     path('ranked-scores/', RankedScores.as_view(), name='ranked-scores'),
+    path('ranked-scores/<int:game_type_id>/', RankedScores.as_view(), name='ranked-scores'),
     path('game-polls-update/', RetrieveGamePollsUpdate.as_view(), name='game-polls-update'),
     path('validate-token/', validate_token, name='validate-token'),
     path('log-out/', log_out, name='log-out'),
