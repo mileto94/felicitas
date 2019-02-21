@@ -20,7 +20,13 @@ def get_next_poll(request, game_id, poll_id):
     else:
         return Http404('This poll does not exist!')
 
-    return JsonResponse(poll.serialize_poll())
+    poll_data = poll.serialize_poll()
+
+    # Cache poll info for later
+    cache_key = settings.POLL_DATA_KEY.format(id=poll_id)
+    cache.set(cache_key, poll_data, timeout=settings.CACHE_TIMEOUT)
+
+    return JsonResponse(poll_data)
 
 
 def get_polls_per_game_type(request, game_id):

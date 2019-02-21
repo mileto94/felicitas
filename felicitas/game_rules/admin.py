@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.utils import unquote
+from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render
 from django.urls import path
@@ -94,3 +96,5 @@ class PollAdmin(admin.ModelAdmin):
         for index, obj in enumerate(qs):
             obj.id = query_ids[index]
             obj._update_game_polls()
+            cache_key = settings.POLL_DATA_KEY.format(id=obj.id)
+            cache.delete(cache_key)

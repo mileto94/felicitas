@@ -2,6 +2,7 @@ import json
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.db import models
 from django.forms.models import model_to_dict
 
@@ -137,11 +138,23 @@ class BasePoll(models.Model):
         if is_new and self.game:
             self._update_game_polls()
 
+        # Cache poll info for later
+        cache_key = settings.POLL_DATA_KEY.format(id=self.id)
+        cache.set(cache_key, self.serialize_poll(), timeout=settings.CACHE_TIMEOUT)
+
     def delete(self, *args, **kwargs):
         poll_id = self.id
         super(BasePoll, self).delete(*args, **kwargs)
         self.id = poll_id
         self._update_game_polls()
+        cache_key = settings.POLL_DATA_KEY.format(id=self.id)
+        cache.delete(cache_key)
+
+    def serialize_poll(self):
+        data = model_to_dict(self)
+        answers = [model_to_dict(ans) for ans in self.answers.all()]
+        data['answers'] = answers
+        return data
 
 
 class Poll(BasePoll):
@@ -161,11 +174,7 @@ class Poll(BasePoll):
         "poll_type": "multiple"
     }
     """
-    def serialize_poll(self):
-        data = model_to_dict(self)
-        answers = [model_to_dict(ans) for ans in self.answers.all()]
-        data['answers'] = answers
-        return data
+    pass
 
 
 class Answer(models.Model):
