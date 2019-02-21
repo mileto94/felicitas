@@ -77,7 +77,6 @@ class StartGame(generics.CreateAPIView):
             poll_data = json.loads(poll_data)
         else:
             poll_data = get_poll_data(game_type_id, first_poll_id, request.POST)
-            cache.set(first_poll_key, json.dumps(poll_data), timeout=settings.CACHE_TIMEOUT)
 
         # prepare response
         response_data = model_to_dict(game)
