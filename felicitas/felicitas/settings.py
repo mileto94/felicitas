@@ -178,17 +178,15 @@ CORS_ALLOW_METHODS = (
     'POST',
 )
 
-
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '/home/milka/PycharmProjects/felicitas_repo/cache/django_cache',
-        'TIMEOUT': None,
-        'OPTIONS': {
-            'MAX_ENTRIES': 10000
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     }
 }
 
-
 POLL_DATA_KEY = 'poll-id-{id}'
+CACHE_TIMEOUT = 60 * 60 * 24 * 7  # 7 days
