@@ -72,6 +72,13 @@ def get_active_games(request):
     return JsonResponse({'games': data})
 
 
+def get_games_data(request, *args, **kwargs):
+    data = dict(GameType.objects.filter(
+        id__in=request.GET.getlist('game_id')
+    ).values_list('id', 'name'))
+    return JsonResponse({'games': data})
+
+
 @csrf_exempt
 def collect_game_polls(request):
     if request.method != 'POST' or not request.body:
