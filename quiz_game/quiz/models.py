@@ -26,7 +26,6 @@ class Game(models.Model):
         return f'ID: {self.id} by player {self.player}'
 
     def _collect_game_polls(self):
-        return
         try:
             sns_client = get_client('sns')
             response = sns_client.publish(

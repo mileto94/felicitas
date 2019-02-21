@@ -73,6 +73,7 @@ class StartGame(generics.CreateAPIView):
 
         # prepare response
         response_data = model_to_dict(game)
+        response_data['polls_counter'] = len(game.answered_polls)
         response_data['poll'] = poll_data
 
         headers = self.get_success_headers(serializer.data)
@@ -138,6 +139,7 @@ class VotePerPoll(generics.CreateAPIView):
         # update game total points
         game = votelog.game
         game.result = game.result + votelog.points
+        print('game result')
 
         # get next poll id
         poll_id = selected_answer.get('next_poll')
@@ -157,6 +159,7 @@ class VotePerPoll(generics.CreateAPIView):
 
         # prepare response
         response_data = model_to_dict(votelog.game)
+        response_data['polls_counter'] = len(game.answered_polls)
         response_data['poll'] = poll_data
         print(response_data)
 
