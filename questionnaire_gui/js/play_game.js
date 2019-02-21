@@ -16,6 +16,11 @@
         dataType: 'json',
         contentType: 'application/json'
     }).then(function (data) {
+        localStorage.setItem('game_id', data.id);
+        localStorage.setItem('result', data.result);
+        localStorage.setItem('fished', data.finished);
+        localStorage.setItem('poll_id', data.poll.id);
+
        $('#poll-name').text(data.poll.title);
 
        $.each(data.poll.answers, function (index, answer) {
@@ -42,11 +47,20 @@
             "token": localStorage.getItem('user_key'),
             "player": localStorage.getItem('user_id'),
             "game_type": localStorage.getItem('game_type_id'),
-            "vote": $('.answer:checked').val()
+            "vote": $('.answer:checked').val(),
+            "game": localStorage.getItem('game_id'),
+            "poll": localStorage.getItem('poll_id')
         }),
         dataType: 'json',
         contentType: 'application/json'
     }).then(function (data) {
+        // TODO: handle end game!!!!!
+        console.log(data);
+        localStorage.setItem('game_id', data.id);
+        localStorage.setItem('result', data.result);
+        localStorage.setItem('fished', data.finished);
+        localStorage.setItem('poll_id', data.poll.id);
+
        $('#poll-name').text(data.poll.title);
 
        $.each(data.poll.answers, function (index, answer) {
