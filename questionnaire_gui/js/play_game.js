@@ -96,3 +96,32 @@
     });
     });
 })(jQuery);
+
+
+function endGame() {
+    if(confirm('Are you sure you want to end your game?')) {
+        $.ajax({
+            url: 'http://localhost:8001/end-game/',
+            method: 'POST',
+            data: JSON.stringify({
+                "token": localStorage.getItem('user_key'),
+                "id": localStorage.getItem('game_id'),
+            }),
+            dataType: 'json',
+            contentType: 'application/json'
+        }).then(function (data) {
+
+            if(confirm(`We're sorry you're leaving! You've completed the game with score ${localStorage.getItem('result')}. Do you want to see all results?`)) {
+                window.location.href = 'results.html';
+            } else {
+                window.location.href = 'index.html';
+            }
+            console.log(data);
+            localStorage.setItem('game_id', data.id);
+            localStorage.setItem('result', data.result);
+            localStorage.setItem('fished', data.finished);
+            localStorage.setItem('poll_id', data.poll.id);
+            localStorage.setItem('polls_counter', data.polls_counter);
+        });
+    }
+}

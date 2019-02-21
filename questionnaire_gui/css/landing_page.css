@@ -3,3 +3,11 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+#vote-btn {
+    margin-top: 15px;
+}
+
+.game-actions {
+    float: right;
+}
