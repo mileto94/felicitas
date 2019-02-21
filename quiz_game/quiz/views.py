@@ -18,7 +18,7 @@ from quiz.request_parsers import PlainTextParser
 from quiz.serializers import (
     GameInfoUpdateSerializer, NewGameSerializer, VotePollSerializer,
     EndGameSerializer, GameScoreSerializer, GamePollsUpdateSerializer)
-from quiz.utils import get_available_polls, get_poll_data
+from quiz.utils import get_available_polls, get_poll
 
 
 class StartGame(generics.CreateAPIView):
@@ -26,7 +26,6 @@ class StartGame(generics.CreateAPIView):
     authentication_classes = ()
     permission_classes = (permissions.AllowAny, )
     serializer_class = NewGameSerializer
-    # TODO: Check whether we should use some permission classes
 
     def post(self, request, *args, **kwargs):
         is_authenticated(request)
@@ -47,7 +46,7 @@ class StartGame(generics.CreateAPIView):
         total_count = game_data.get('count')
 
         if not available_polls:
-            poll_data = get_available_polls(game_type_id, request.POST)
+            poll_data = get_available_polls(game_type_id)
             cache.set(cache_polls_key, json.dumps(poll_data), timeout=None)
 
             available_polls, total_count = poll_data.get('polls', []), poll_data.get('count', 1)
@@ -60,23 +59,17 @@ class StartGame(generics.CreateAPIView):
         except Exception:
             game_polls = available_polls[:1]
 
-        # save info for selected polls per this game
-        game.polls_list = game_polls
-        game.save()
-
         first_poll_id = game_polls[0] if game_polls else 0
+
+        # save info for selected polls per this game
+        game.polls_list = game_polls[1:]
+        game.answered_polls = [first_poll_id]
+        game.save()
 
         # send info about desired polls to felicitas
         game._collect_game_polls()
 
-        # get data for the poll from cache
-        first_poll_key = settings.POLL_DATA_KEY.format(id=first_poll_id)
-        print('First poll ID: ', first_poll_id)
-        poll_data = cache.get(first_poll_key)
-        if poll_data:
-            poll_data = json.loads(poll_data)
-        else:
-            poll_data = get_poll_data(game_type_id, first_poll_id, request.POST)
+        poll_data = get_poll(game_type_id, first_poll_id)
 
         # prepare response
         response_data = model_to_dict(game)
@@ -114,29 +107,58 @@ class EndGame(generics.CreateAPIView):
 class VotePerPoll(generics.CreateAPIView):
     queryset = VoteLog.objects.none()
     serializer_class = VotePollSerializer
-    # TODO: Check whether we should use some permission classes
-
-    # def perform_create(self, serializer):
-    #     votelog = serializer.save()
-    #     Game.objects.filter(id=votelog.game, player=votelog.player).update(
-    #         result=F('result') + votelog.points)
+    authentication_classes = ()
+    permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
         is_authenticated(request)
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
         votelog = serializer.save()
-        Game.objects.filter(id=votelog.game, player=votelog.player).update(
-            result=F('result') + votelog.points)
 
-        game_id = serializer.validated_data.get('id')
-        games = Game.objects.filter(id=game_id)
-        updated = games.update(finished=True)
-        request.session['game_id'] = None
+        poll_id = serializer.validated_data.get('poll')
+        poll_data = cache.get(settings.POLL_DATA_KEY.format(id=poll_id))
 
-        response_data = model_to_dict(games.first()) if updated else {}
+        # get which answer was selected
+        selected_answer = {}
+        for answer in poll_data.get('answers'):
+            if answer.get('title') == serializer.validated_data.get('vote'):
+                selected_answer = answer
+                break
+
+        # update votelog points
+        if selected_answer.get('is_correct'):
+            votelog.points = poll_data.get('positive_marks')
+        else:
+            # Poll object should contain negative mark
+            votelog.points = poll_data.get('negative_marks')
+        votelog.save()
+
+        # update game total points
+        game = votelog.game
+        game.result = game.result + votelog.points
+
+        # get next poll id
+        poll_id = selected_answer.get('next_poll')
+        if not poll_id:
+            if len(game.polls_list):
+                poll_id = game.polls_list[0]
+                game.polls_list = game.polls_list[1:]
+            else:
+                game.finished = True
+                game.save()
+                return response.Response(model_to_dict(votelog.game), status=status.HTTP_200_OK)
+
+        game.answered_polls.append(poll_id)
+        game.save()
+
+        poll_data = get_poll(game.game_type, poll_id)
+
+        # prepare response
+        response_data = model_to_dict(votelog.game)
+        response_data['poll'] = poll_data
+        print(response_data)
 
         headers = self.get_success_headers(serializer.data)
         return response.Response(
@@ -149,7 +171,6 @@ class RetrieveGameInfoUpdate(generics.CreateAPIView):
     permission_classes = ()
     parser_classes = (PlainTextParser, JSONParser)
     serializer_class = GameInfoUpdateSerializer
-    # TODO: Check whether we should use some permission classes
 
     def post(self, request, *args, **kwargs):
         print('Retrieved game info update: ', request.data)
@@ -177,7 +198,6 @@ class RetrieveGamePollsUpdate(generics.CreateAPIView):
     permission_classes = ()
     parser_classes = (PlainTextParser, JSONParser)
     serializer_class = GamePollsUpdateSerializer
-    # TODO: Check whether we should use some permission classes
 
     def post(self, request, *args, **kwargs):
         print('Retrieved game polls update: ', request.data)
