@@ -185,7 +185,7 @@ class Answer(models.Model):
     title = models.CharField(max_length=100, help_text='Enter title for the new answer.')
     is_correct = models.BooleanField(default=False)
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name='answers', related_query_name='answer')
-    next_poll = models.PositiveIntegerField(blank=True, null=True)
+    next_poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name='next_poll', blank=True, null=True)
     # image =
 
     def __str__(self):
