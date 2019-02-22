@@ -65,26 +65,24 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-12 text-center">
-          <h2 class="section-heading text-uppercase" id="game-name"></h2>
-          <h3 class="section-subheading text-muted">Question <span id="polls-counter"></span> of <span id="total-polls"></span></h3>
+          <h2 class="section-heading text-uppercase" id="game-name">General resutls</h2>
+          <h3 class="section-subheading text-muted">For all games</h3>
         </div>
       </div>
       <div class="row">
-        <div class="col-md-12">
-          <h4 class="service-heading" id="poll-name"></h4>
-          <p class="text-muted" id="poll-help"></p>
+        <div class="col-lg">
+            <table class="table" id="general-results">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Player</th>
+                  <th scope="col">Game</th>
+                  <th scope="col">Points</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
         </div>
-        <div>
-            <div id="poll-answers"></div>
-            <button type="button" class="btn btn-primary" id="vote-btn">
-                <i class="fas fa-vote-yea"></i>Answer</button>
-        </div>
-      </div>
-
-      <div class="game-actions">
-          <button class="btn btn-danger" type="button" onclick="endGame()">
-          <i class="fas fa-ban"></i>
-          End Game</button>
       </div>
     </div>
   </section>
@@ -119,7 +117,7 @@
 
   <!-- Custom scripts for this template -->
   <script src="js/main.js"></script>
-  <script src="js/play_game.js"></script>
+  <script src="js/general_results.js"></script>
 </body>
 
 </html>
