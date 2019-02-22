@@ -118,7 +118,7 @@ class BasePoll(models.Model):
             response = sns_client.publish(
                 TopicArn=settings.SNS_SETTINGS['updateGamePolls']['TopicArn'],
                 Message=json.dumps({
-                    'game_id': self.id,
+                    'game_id': self.game_id,
                     'polls': list(self.game.poll_set.values_list('id', flat=True)),
                     'count': self.game.polls_count
                 }),
