@@ -12,12 +12,3 @@ class AddPollForm(forms.ModelForm):
     class Meta:
         model = Poll
         fields = '__all__'
-
-
-class AddAnswerForm(forms.ModelForm):
-    class Meta:
-        model = Answer
-        fields = '__all__'
-
-
-AddAnswerFormSet = formset_factory(AddAnswerForm, extra=2, max_num=1)

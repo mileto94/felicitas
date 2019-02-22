@@ -6,7 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import render
 from django.urls import path
 
-from game_rules.forms import AddPollForm, UploadPollsForm, AddAnswerFormSet, AddAnswerForm
+from game_rules.forms import AddPollForm, UploadPollsForm
 from game_rules.models import GameType, Poll, Answer, Category #, DigitAnswer
 from game_rules.utils import upload_polls_from_file
 
