@@ -2,6 +2,7 @@ import json
 
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
+from django.core.cache import cache
 from django.db import models
 
 from quiz_game.aws_connections import get_client
@@ -45,6 +46,12 @@ class Game(models.Model):
         except Exception as e:
             print('Failed to send information about collectGamePolls.')
             print(e)
+
+    @property
+    def polls_count(self):
+        cache_polls_key = settings.GAME_POLLS_KEY.format(game_id=self.game_type)
+        game_data = json.loads(cache.get(cache_polls_key, "{}"))
+        return game_data.get('count')
 
 
 class VoteLog(models.Model):

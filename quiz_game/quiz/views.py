@@ -139,12 +139,20 @@ class VotePerPoll(generics.CreateAPIView):
         # update game total points
         game = votelog.game
         game.result = game.result + votelog.points
-        print('game result')
 
         # get next poll id
         poll_id = selected_answer.get('next_poll')
+        if poll_id:
+            # Check if next poll is special
+            if poll_id in game.answered_polls:
+                # If the next poll is already past, switch it.
+                poll_id = None
+            elif poll_id in game.polls_list:
+                # If the next poll is future, remove it from future list.
+                game.polls_list.pop(poll_id)
+
         if not poll_id:
-            if len(game.polls_list):
+            if len(game.answered_polls) < game.polls_count and len(game.polls_list):
                 poll_id = game.polls_list[0]
                 game.polls_list = game.polls_list[1:]
             else:
