@@ -34,17 +34,20 @@ class BaseFelicitasTestCase():
 
     def create_poll(self, game, category, user):
         with patch('boto3.client', return_value=MagicMock()) as mock_sns_client:
-            poll = Poll.objects.create(
-                title='How is the weather today?',
-                category=category,
-                difficulty='easy',
-                poll_type='single',
-                help_text='Help text',
-                positive_marks=1,
-                negative_marks=-1,
-                created_by=user,
-                game=game
-            )
+            with patch('django.core.cache.cache.set', return_value=None) as mock_cache:
+                poll = Poll.objects.create(
+                    title='How is the weather today?',
+                    category=category,
+                    difficulty='easy',
+                    poll_type='single',
+                    help_text='Help text',
+                    positive_marks=1,
+                    negative_marks=-1,
+                    created_by=user,
+                    game=game
+                )
+            self.assertTrue(mock_cache.called)
+            self.assertEqual(1, mock_cache.call_count)
 
         self.assertTrue(mock_sns_client.called)
         self.assertEqual(1, mock_sns_client.call_count)
@@ -78,8 +81,12 @@ class TestNextPoll(BaseFelicitasTestCase, TestCase):
     def test_next_poll_with_existing_poll(self):
         """Test poll data schema."""
         url = reverse('next-poll', kwargs={'game_id': self.game.id, 'poll_id': self.poll.id})
-        response = self.client.get(url)
-        self.assertDictEqual(self.poll.serialize_poll(), response.json())
+        with patch('django.core.cache.cache.set', return_value=None) as mock_cache:
+            response = self.client.get(url)
+            self.assertDictEqual(self.poll.serialize_poll(), response.json())
+
+        self.assertTrue(mock_cache.called)
+        self.assertEqual(1, mock_cache.call_count)
 
     def test_next_poll_with_not_existing_poll(self):
         url = reverse('next-poll', kwargs={'game_id': self.game.id, 'poll_id': 100})
@@ -162,7 +169,6 @@ class TestGameDescription(BaseFelicitasTestCase, TestCase):
 
 class TestActiveGames(BaseFelicitasTestCase, TestCase):
     def test_active_games_structure(self):
-        """Test poll data schema."""
         self.game = self.create_game(count=3)
 
         url = reverse('games-list')
@@ -177,9 +183,32 @@ class TestActiveGames(BaseFelicitasTestCase, TestCase):
         self.assertDictEqual(expected, response.json().get('games')[0])
 
     def test_non_active_games(self):
-        """Test poll data schema."""
         self.game = self.create_game(count=3, is_active=False)
 
         url = reverse('games-list')
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
+
+
+class TestGamesData(BaseFelicitasTestCase, TestCase):
+    def test_games_data(self):
+        self.game = self.create_game(count=3)
+
+        url = reverse('games-data')
+        response = self.client.get(url, data={'game_id': [self.game.id]})
+        expected = {str(self.game.id): self.game.name}
+        self.assertDictEqual(expected, response.json().get('games'))
+
+    def test_games_without_params(self):
+        self.game = self.create_game(count=3)
+
+        url = reverse('games-data')
+        response = self.client.get(url)
+        self.assertDictEqual({}, response.json().get('games'))
+
+    def test_games_with_wrong_params(self):
+        self.game = self.create_game(count=3)
+
+        url = reverse('games-data')
+        response = self.client.get(url, data={'game_id': [100]})
+        self.assertDictEqual({}, response.json().get('games'))
