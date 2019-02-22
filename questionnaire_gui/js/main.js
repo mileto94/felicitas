@@ -20,6 +20,7 @@ function logOut() {
            alert('You have successfully logged out.');
            localStorage.clear();
            updateUserControls();
+           window.location.href = 'index.html';
         }).fail(function (data) {
            alert('Sorry, There is an error in the log out process. Please, try again.');
            console.log(data);
