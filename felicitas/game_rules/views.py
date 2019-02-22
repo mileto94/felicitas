@@ -2,7 +2,7 @@ import json
 
 from django.conf import settings
 from django.core.cache import cache
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 
@@ -18,7 +18,7 @@ def get_next_poll(request, game_id, poll_id):
     if polls.exists():
         poll = polls.first()
     else:
-        return Http404('This poll does not exist!')
+        return JsonResponse({}, status=404)
 
     poll_data = poll.serialize_poll()
 
@@ -51,7 +51,7 @@ def get_game_description(request, game_id):
         'name': game_type.name,
         'description': game_type.description,
         'polls_count': game_type.polls_count,
-        'image': game_type.image.url if game_type.image else 'img/portfolio/02-thumbnail.jpg'
+        'image': game_type.get_image_url()
     })
 
 

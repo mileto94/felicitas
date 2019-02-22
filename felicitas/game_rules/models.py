@@ -52,6 +52,9 @@ class GameType(models.Model):
         if self.is_active:
             self._update_game_info()
 
+    def get_image_url(self):
+        return self.image.url if self.image else 'img/portfolio/02-thumbnail.jpg'
+
 
 class BasePoll(models.Model):
     """
