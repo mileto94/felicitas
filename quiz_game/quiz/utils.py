@@ -1,4 +1,5 @@
 import requests
+from random import shuffle
 
 from django.conf import settings
 from django.core.cache import cache
@@ -37,6 +38,7 @@ def get_poll(game_type_id, poll_id):
     poll_data = cache.get(poll_key)
     if not poll_data:
         poll_data = get_poll_data(game_type_id, poll_id)
+    shuffle(poll_data.get('answers'))
     return poll_data
 
 

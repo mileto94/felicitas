@@ -266,5 +266,5 @@ def log_out(request):
         cached_user_id = cache.get(user_key)
         if str(user_id) == str(cached_user_id):
             cache.delete(user_key)
-            return JsonResponse({'status': 'OK'}, status=200)
+        return JsonResponse({'status': 'OK'}, status=200)
     return JsonResponse({'status': 'fail'}, status=400)
