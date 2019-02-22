@@ -9,7 +9,7 @@ from django.urls import reverse
 from game_rules.models import Category, GameType, Poll
 
 
-class BaseFelicitasTestCase():
+class BaseFelicitasTestCase:
     def create_game(self, count=1, is_active=True):
         with patch('boto3.client', return_value=MagicMock()) as mock_sns_client:
             game_type = GameType.objects.create(
@@ -62,23 +62,6 @@ class TestNextPoll(BaseFelicitasTestCase, TestCase):
         self.user = self.create_user()
         self.game = self.create_game(count=3)
         self.poll = self.create_poll(self.game, self.category, self.user)
-
-    def test_poll_serialization(self):
-        """Test serialize_poll() method of Poll model."""
-        expected = {
-            'id': self.poll.id,
-            'title': self.poll.title,
-            'category': self.poll.category_id,
-            'difficulty': self.poll.difficulty,
-            'poll_type': self.poll.poll_type,
-            'help_text': self.poll.help_text,
-            'positive_marks': self.poll.positive_marks,
-            'negative_marks': self.poll.negative_marks,
-            'created_by': self.poll.created_by_id,
-            'game': self.poll.game_id,
-            'answers': []
-        }
-        self.assertDictEqual(expected, self.poll.serialize_poll())
 
     def test_next_poll_with_existing_poll(self):
         """Test poll data schema."""
@@ -265,3 +248,51 @@ class TestCollectGamePolls(BaseFelicitasTestCase, TestCase):
             self.assertEqual(0, mock_cache.call_count)
         self.assertTrue(mock_cached_polls.called)
         self.assertEqual(1, mock_cached_polls.call_count)
+
+
+class TestPollModel(BaseFelicitasTestCase, TestCase):
+    def setUp(self):
+        self.category = self.create_category()
+        self.user = self.create_user()
+        self.game = self.create_game(count=3)
+        self.poll = self.create_poll(self.game, self.category, self.user)
+
+    def test_poll_serialization(self):
+        """Test serialize_poll() method of Poll model."""
+        expected = {
+            'id': self.poll.id,
+            'title': self.poll.title,
+            'category': self.poll.category_id,
+            'difficulty': self.poll.difficulty,
+            'poll_type': self.poll.poll_type,
+            'help_text': self.poll.help_text,
+            'positive_marks': self.poll.positive_marks,
+            'negative_marks': self.poll.negative_marks,
+            'created_by': self.poll.created_by_id,
+            'game': self.poll.game_id,
+            'answers': []
+        }
+        self.assertDictEqual(expected, self.poll.serialize_poll())
+
+    def test_poll_deletion(self):
+        """Test serialize_poll() method of Poll model."""
+        with patch('boto3.client', return_value=MagicMock()) as mock_sns_client:
+            with patch('django.core.cache.cache.delete',
+                       return_value=1) as mock_cache:
+                self.poll.delete()
+            self.assertTrue(mock_cache.called)
+            self.assertEqual(1, mock_cache.call_count)
+
+        self.assertTrue(mock_sns_client.called)
+        self.assertEqual(1, mock_sns_client.call_count)
+
+    def test_poll_deletion_with_sns_failure(self):
+        """Test serialize_poll() method of Poll model."""
+        with patch('boto3.client', return_value=MagicMock(), side_effect=IndexError) as mock_sns_client:
+            with patch('django.core.cache.cache.delete', return_value=1) as mock_cache:
+                self.poll.delete()
+            self.assertTrue(mock_cache.called)
+            self.assertEqual(1, mock_cache.call_count)
+
+        self.assertTrue(mock_sns_client.called)
+        self.assertEqual(1, mock_sns_client.call_count)
