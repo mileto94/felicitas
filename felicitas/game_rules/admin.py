@@ -88,7 +88,7 @@ class LimitedAdminInlineMixin(object):
     """
 
     @staticmethod
-    def limit_inline_choices(formset, field, empty=False, func='filter', **filters):
+    def limit_inline_choices(formset, field, empty=False, qs_attr='filter', **filters):
         """
         This function fetches the queryset with available choices for a given
         `field` and filters it based on the criteria specified in filters,
@@ -101,7 +101,7 @@ class LimitedAdminInlineMixin(object):
             print('Limiting the queryset to none')
             formset.form.base_fields[field].queryset = qs.none()
         else:
-            qs = getattr(qs, func)(**filters)
+            qs = getattr(qs, qs_attr)(**filters)
             print('Limiting queryset for formset to: %s', qs)
 
             formset.form.base_fields[field].queryset = qs
@@ -114,17 +114,17 @@ class LimitedAdminInlineMixin(object):
         formset = super(LimitedAdminInlineMixin, self).get_formset(
             request, obj, **kwargs)
 
-        for (field, filters) in self.get_filters(obj):
-            if obj:
-                self.limit_inline_choices(formset, field, **filters)
-            else:
-                self.limit_inline_choices(formset, field, empty=True)
+        qs_attributes = {
+            'filter': self.get_filters(obj),
+            'exclude': self.get_excludes(obj)
+        }
+        for attr, options in qs_attributes.items():
 
-        for (field, excludes) in self.get_excludes(obj):
-            if obj:
-                self.limit_inline_choices(formset, field, func='exclude', **excludes)
-            else:
-                self.limit_inline_choices(formset, field, empty=True)
+            for (field, filters) in options:
+                if obj:
+                    self.limit_inline_choices(formset, field, qs_attr=attr, **filters)
+                else:
+                    self.limit_inline_choices(formset, field, empty=True)
 
         return formset
 
@@ -157,10 +157,12 @@ class AnswerAdminInline(LimitedAdminInlineMixin, admin.TabularInline):
     fk_name = 'poll'
 
     def get_filters(self, obj):
-        return (('next_poll', {'game_id': obj.game_id}), )
+        game_id = obj.game_id if obj else 0
+        return (('next_poll', {'game_id': game_id}), )
 
     def get_excludes(self, obj):
-        return (('next_poll', {'id': obj.id}), )
+        obj_id = obj.id if obj else 0
+        return (('next_poll', {'id': obj_id}), )
 
 
 # @admin.register(DigitAnswer)
