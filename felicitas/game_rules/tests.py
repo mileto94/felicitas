@@ -1,3 +1,5 @@
+import json
+
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import User
@@ -212,3 +214,54 @@ class TestGamesData(BaseFelicitasTestCase, TestCase):
         url = reverse('games-data')
         response = self.client.get(url, data={'game_id': [100]})
         self.assertDictEqual({}, response.json().get('games'))
+
+
+class TestCollectGamePolls(BaseFelicitasTestCase, TestCase):
+    def test_collect_game_polls(self):
+        url = reverse('cache-polls')
+        response = self.client.get(url)
+        expected = {'status': 'fail'}
+        self.assertEqual(400, response.status_code)
+        self.assertDictEqual(expected, response.json())
+
+    def test_collect_game_polls_without_cached_value(self):
+        self.category = self.create_category()
+        self.user = self.create_user()
+        self.game = self.create_game(count=3)
+        self.poll = self.create_poll(self.game, self.category, self.user)
+
+        url = reverse('cache-polls')
+        data = json.dumps({"Message": f'{{"polls": [{self.poll.id}]}}'})
+        print(type(data))
+        expected = {'status': 'OK'}
+
+        with patch('django.core.cache.cache.keys', return_value=[]) as mock_cached_polls:
+            with patch('django.core.cache.cache.set', return_value=None) as mock_cache:
+                response = self.client.post(url, data=data, content_type='application/json')
+                self.assertEqual(200, response.status_code)
+                self.assertDictEqual(expected, response.json())
+            self.assertTrue(mock_cache.called)
+            self.assertEqual(1, mock_cache.call_count)
+        self.assertTrue(mock_cached_polls.called)
+        self.assertEqual(1, mock_cached_polls.call_count)
+
+    def test_collect_game_polls_with_cached_value(self):
+        self.category = self.create_category()
+        self.user = self.create_user()
+        self.game = self.create_game(count=3)
+        self.poll = self.create_poll(self.game, self.category, self.user)
+
+        url = reverse('cache-polls')
+        data = json.dumps({"Message": f'{{"polls": [{self.poll.id}]}}'})
+        print(type(data))
+        expected = {'status': 'OK'}
+
+        with patch('django.core.cache.cache.keys', return_value=[f'poll-id-{self.poll.id}']) as mock_cached_polls:
+            with patch('django.core.cache.cache.set', return_value=None) as mock_cache:
+                response = self.client.post(url, data=data, content_type='application/json')
+                self.assertEqual(200, response.status_code)
+                self.assertDictEqual(expected, response.json())
+            self.assertFalse(mock_cache.called)
+            self.assertEqual(0, mock_cache.call_count)
+        self.assertTrue(mock_cached_polls.called)
+        self.assertEqual(1, mock_cached_polls.call_count)
