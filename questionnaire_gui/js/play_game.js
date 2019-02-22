@@ -34,7 +34,7 @@
            $('#poll-answers').append(`
                 <div class="form-check">
                   <input class="form-check-input answer" type="radio" name="answers" id="exampleRadios${answer.id}" value="${answer.title}">
-                  <label class="form-check-label" for="exampleRadios${answer.title}">
+                  <label class="form-check-label" for="exampleRadios${answer.id}">
                     ${answer.title}
                   </label>
                 </div>`
@@ -86,7 +86,7 @@
             $('#poll-answers').append(`
                  <div class="form-check">
                    <input class="form-check-input answer" type="radio" name="exampleRadios" id="exampleRadios${answer.id}" value="${answer.title}">
-                   <label class="form-check-label" for="exampleRadios${answer.title}">
+                   <label class="form-check-label" for="exampleRadios${answer.id}">
                      ${answer.title}
                    </label>
                  </div>`
