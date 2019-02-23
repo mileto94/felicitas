@@ -193,7 +193,6 @@ class RetrieveGameInfoUpdate(generics.CreateAPIView):
         game_info = serializer.validated_data.get('game_info')
         cache_key = settings.GAME_INFO_KEY.format(game_id=game_id)
         cache.set(cache_key, game_info, timeout=None)
-        print(cache.get(cache_key))
         return response.Response({'status': 'OK'}, status=status.HTTP_200_OK)
 
 
@@ -246,7 +245,6 @@ class RetrieveGamePollsUpdate(generics.CreateAPIView):
             'count': polls_count
         }
         cache.set(cache_key, json.dumps(game_data), timeout=None)
-        print(cache.get(cache_key))
         return response.Response({'status': 'OK'}, status=status.HTTP_200_OK)
 
 
