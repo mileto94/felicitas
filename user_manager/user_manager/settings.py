@@ -25,7 +25,7 @@ SECRET_KEY = '6*z*s+&3g$*!t1!%@2n(n1@!+(&c*eb3-0_16k8%*g$pz%6wx$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', ['localhost', ])
 
 
 # Application definition
@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'django_extensions',
+    # 'django_extensions',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
@@ -97,11 +97,11 @@ DATABASES = {
     },
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'user_manager',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'NAME': os.environ.get('DB_NAME', 'user_manager'),
+        'USER': os.environ.get('DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'postgres'),
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('DB_PORT', '5432')
     }
 }
 
@@ -157,13 +157,13 @@ CORS_ALLOW_METHODS = (
 )
 
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '/home/milka/PycharmProjects/felicitas_repo/cache/user_manager',
-        'TIMEOUT': None,
-        'OPTIONS': {
-            'MAX_ENTRIES': 10000
-        }
-    }
-}
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+#         'LOCATION': '/home/milka/PycharmProjects/felicitas_repo/cache/user_manager',
+#         'TIMEOUT': None,
+#         'OPTIONS': {
+#             'MAX_ENTRIES': 10000
+#         }
+#     }
+# }
