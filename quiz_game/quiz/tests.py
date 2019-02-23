@@ -163,3 +163,56 @@ class TestSNSNotifications(BaseQuizGameTestCase, TestCase):
             self.assertDictEqual(expected, response.json())
         self.assertTrue(mock_cache.called)
         self.assertEqual(1, mock_cache.call_count)
+
+
+class TestRankedScores(BaseQuizGameTestCase, TestCase):
+    def test_get_ranked_scores_for_all_games(self):
+        url = reverse('ranked-scores')
+        game = self.create_game(finished=True, result=55)
+        game_2 = self.create_game(finished=True, result=2)
+        game_name = 'Who wants to be millionaire?'
+        player = 'Username'
+        expected = {
+            'game_type': game_name,
+            'player': player,
+            'result': game.result
+        }
+
+        with patch('quiz.views.get_players_data', return_value={'1': player}) as mock_players:
+
+            with patch('quiz.views.get_games_data', return_value={'1': game_name}) as mock_data:
+                response = self.client.get(url)
+                self.assertEqual(200, response.status_code)
+                self.assertDictEqual(expected, response.json()[0])
+
+            self.assertTrue(mock_data.called)
+            self.assertEqual(1, mock_data.call_count)
+
+        self.assertTrue(mock_players.called)
+        self.assertEqual(1, mock_players.call_count)
+
+    def test_get_ranked_scores_for_game_type(self):
+        game = self.create_game(finished=True, result=55)
+        game_2 = self.create_game(finished=True, result=56, game_type=2)
+        url = reverse('ranked-scores-per-game', kwargs={'game_type_id': game.game_type})
+
+        game_name = 'Who wants to be millionaire?'
+        player = 'Username'
+        expected = {
+            'game_type': game_name,
+            'player': player,
+            'result': game.result
+        }
+
+        with patch('quiz.views.get_players_data', return_value={'1': player}) as mock_players:
+
+            with patch('quiz.views.get_games_data', return_value={'1': game_name}) as mock_data:
+                response = self.client.get(url)
+                self.assertEqual(200, response.status_code)
+                self.assertDictEqual(expected, response.json()[0])
+
+            self.assertTrue(mock_data.called)
+            self.assertEqual(1, mock_data.call_count)
+
+        self.assertTrue(mock_players.called)
+        self.assertEqual(1, mock_players.call_count)
