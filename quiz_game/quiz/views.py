@@ -155,7 +155,7 @@ class VotePerPoll(generics.CreateAPIView):
                 poll_id = None
             elif poll_id in game.polls_list:
                 # If the next poll is future, remove it from future list.
-                game.polls_list.pop(poll_id)
+                game.polls_list.remove(poll_id)
 
         if not poll_id:
             if len(game.answered_polls) < game.polls_count and len(game.polls_list):

@@ -356,3 +356,392 @@ class TestStartGame(TestCase):
         data = {'game_type': 1, 'player': 1}
         response = self.client.post(url, data=data, content_type='application/json')
         self.assertEqual(403, response.status_code)
+
+
+class TestPollVoting(BaseQuizGameTestCase, TestCase):
+
+    def test_can_not_vote_for_game_if_not_logged_in(self):
+        url = reverse('poll-vote')
+        game = self.create_game()
+        data = {
+            'player': game.player,
+            'game_type': game.game_type,
+            'game': game.id,
+            'vote': 'Davies',
+            'points': game.result,
+            'poll': 1
+        }
+        response = self.client.post(url, data=data, content_type='application/json')
+        self.assertEqual(403, response.status_code)
+
+    def test_vote_for_game(self):
+        game = self.create_game(polls_list=[20, 22])
+        url = reverse('poll-vote')
+        poll_id = 21
+        data = {
+            'token': 'token',
+            'player': game.player,
+            'game_type': game.game_type,
+            'game': game.id,
+            'vote': 'Davies',
+            'points': game.result,
+            'poll': poll_id
+        }
+        poll_data = {
+            'id': poll_id,
+            'title': 'What is the most common surname Wales?',
+            'category': 1,
+            'difficulty': 'easy',
+            'poll_type': 'single',
+            'help_text': '',
+            'positive_marks': 1,
+            'negative_marks': 0,
+            'created_by': 1,
+            'game': 1,
+            'answers': [
+                {
+                    "id": 47,
+                    "title": "Davies",
+                    "is_correct": False,
+                    "poll": poll_id,
+                    "next_poll": None
+                },
+                {
+                    "id": 48,
+                    "title": "Evans",
+                    "is_correct": False,
+                    "poll": poll_id,
+                    "next_poll": None
+                }
+            ]
+        }
+
+        with patch('django.core.cache.cache.get', return_value=poll_data) as mock_cache:
+            with patch('quiz.models.Game.polls_count', 3) as mock_polls_count:
+                with patch('quiz.views.get_poll', return_value=poll_data) as mock_poll:
+                    response = self.client.post(url, data=data, content_type='application/json')
+                    self.assertEqual(201, response.status_code)
+                    response_data = response.json()
+                    self.assertDictEqual(poll_data, response_data.get('poll'))
+
+                    self.assertIn('id', response_data)
+                    self.assertIsInstance(response_data['id'], int)
+
+                    self.assertIn('player', response_data)
+                    self.assertIsInstance(response_data['player'], int)
+
+                    self.assertIn('game_type', response_data)
+                    self.assertIsInstance(response_data['game_type'], int)
+
+                    self.assertIn('result', response_data)
+                    self.assertIsInstance(response_data['result'], int)
+
+                    self.assertIn('finished', response_data)
+                    self.assertFalse(response_data['finished'])
+
+                    self.assertIn('polls_list', response_data)
+                    self.assertIsInstance(response_data['polls_list'], list)
+
+                    self.assertIn('answered_polls', response_data)
+                    self.assertIsInstance(response_data['answered_polls'], list)
+
+                    self.assertIn('polls_counter', response_data)
+                    self.assertEqual(1, response_data['polls_counter'])
+
+                self.assertTrue(mock_poll.called)
+                self.assertEqual(1, mock_poll.call_count)
+
+        self.assertTrue(mock_cache.called)
+        self.assertEqual(2, mock_cache.call_count)
+
+    def test_vote_per_game_with_less_polls(self):
+        game = self.create_game()
+        url = reverse('poll-vote')
+        poll_id = 21
+        data = {
+            'token': 'token',
+            'player': game.player,
+            'game_type': game.game_type,
+            'game': game.id,
+            'vote': 'Davies',
+            'points': game.result,
+            'poll': poll_id
+        }
+        poll_data = {
+            'id': poll_id,
+            'title': 'What is the most common surname Wales?',
+            'category': 1,
+            'difficulty': 'easy',
+            'poll_type': 'single',
+            'help_text': '',
+            'positive_marks': 1,
+            'negative_marks': 0,
+            'created_by': 1,
+            'game': 1,
+            'answers': [
+                {
+                    "id": 47,
+                    "title": "Davies",
+                    "is_correct": True,
+                    "poll": poll_id,
+                    "next_poll": None
+                },
+                {
+                    "id": 48,
+                    "title": "Evans",
+                    "is_correct": False,
+                    "poll": poll_id,
+                    "next_poll": None
+                }
+            ]
+        }
+
+        with patch('django.core.cache.cache.get', return_value=poll_data) as mock_cache:
+            with patch('quiz.models.Game.polls_count', 3) as mock_polls_count:
+                with patch('quiz.views.get_poll', return_value=poll_data) as mock_poll:
+                    response = self.client.post(
+                        url, data=data, content_type='application/json')
+                    self.assertEqual(200, response.status_code)
+                    response_data = response.json()
+
+                    self.assertIn('id', response_data)
+                    self.assertIsInstance(response_data['id'], int)
+
+                    self.assertEqual(game.player, response_data['player'])
+                    self.assertEqual(game.game_type, response_data['game_type'])
+                    self.assertEqual(1, response_data['result'])
+                    self.assertTrue(response_data['finished'])
+                    self.assertListEqual([], response_data['polls_list'])
+                    self.assertListEqual([], response_data['answered_polls'])
+
+                self.assertFalse(mock_poll.called)
+                self.assertEqual(0, mock_poll.call_count)
+
+        self.assertTrue(mock_cache.called)
+        self.assertEqual(2, mock_cache.call_count)
+
+    def test_vote_per_game_with_too_much_polls(self):
+        polls_list = [20, 22]
+        past_polls = [1, 2, 3]
+        poll_id = 21
+        url = reverse('poll-vote')
+
+        game = self.create_game(polls_list=polls_list, answered_polls=past_polls)
+        data = {
+            'token': 'token',
+            'player': game.player,
+            'game_type': game.game_type,
+            'game': game.id,
+            'vote': 'Davies',
+            'points': game.result,
+            'poll': poll_id
+        }
+        poll_data = {
+            'id': poll_id,
+            'title': 'What is the most common surname Wales?',
+            'category': 1,
+            'difficulty': 'easy',
+            'poll_type': 'single',
+            'help_text': '',
+            'positive_marks': 1,
+            'negative_marks': 0,
+            'created_by': 1,
+            'game': 1,
+            'answers': [
+                {
+                    "id": 47,
+                    "title": "Davies",
+                    "is_correct": True,
+                    "poll": poll_id,
+                    "next_poll": None
+                },
+                {
+                    "id": 48,
+                    "title": "Evans",
+                    "is_correct": False,
+                    "poll": poll_id,
+                    "next_poll": None
+                }
+            ]
+        }
+
+        with patch('django.core.cache.cache.get', return_value=poll_data) as mock_cache:
+            with patch('quiz.models.Game.polls_count', 3) as mock_polls_count:
+                with patch('quiz.views.get_poll', return_value=poll_data) as mock_poll:
+                    response = self.client.post(
+                        url, data=data, content_type='application/json')
+                    self.assertEqual(200, response.status_code)
+                    response_data = response.json()
+                    # {"id":101,"player":8,"game_type":1,"result":3,"finished":true,"polls_list":[],"answered_polls":[20,21,3,2]}
+
+                    self.assertIn('id', response_data)
+                    self.assertIsInstance(response_data['id'], int)
+
+                    self.assertEqual(game.player, response_data['player'])
+                    self.assertEqual(game.game_type, response_data['game_type'])
+                    self.assertEqual(1, response_data['result'])
+                    self.assertTrue(response_data['finished'])
+                    self.assertListEqual(polls_list, response_data['polls_list'])
+                    self.assertListEqual(past_polls, response_data['answered_polls'])
+
+                self.assertFalse(mock_poll.called)
+                self.assertEqual(0, mock_poll.call_count)
+
+        self.assertTrue(mock_cache.called)
+        self.assertEqual(2, mock_cache.call_count)
+
+    def test_vote_per_game_with_past_poll_end_game(self):
+        polls_list = [23, 22]
+        past_polls = [20, 434, 231]
+        poll_id = 21
+        url = reverse('poll-vote')
+
+        game = self.create_game(polls_list=polls_list, answered_polls=past_polls)
+        data = {
+            'token': 'token',
+            'player': game.player,
+            'game_type': game.game_type,
+            'game': game.id,
+            'vote': 'Davies',
+            'points': game.result,
+            'poll': poll_id
+        }
+        poll_data = {
+            'id': poll_id,
+            'title': 'What is the most common surname Wales?',
+            'category': 1,
+            'difficulty': 'easy',
+            'poll_type': 'single',
+            'help_text': '',
+            'positive_marks': 1,
+            'negative_marks': 0,
+            'created_by': 1,
+            'game': 1,
+            'answers': [
+                {
+                    "id": 47,
+                    "title": "Davies",
+                    "is_correct": True,
+                    "poll": poll_id,
+                    "next_poll": 20
+                },
+                {
+                    "id": 48,
+                    "title": "Evans",
+                    "is_correct": False,
+                    "poll": poll_id,
+                    "next_poll": 22
+                }
+            ]
+        }
+
+        with patch('django.core.cache.cache.get', return_value=poll_data) as mock_cache:
+            with patch('quiz.models.Game.polls_count', 3) as mock_polls_count:
+                with patch('quiz.views.get_poll', return_value=poll_data) as mock_poll:
+                    response = self.client.post(
+                        url, data=data, content_type='application/json')
+                    self.assertEqual(200, response.status_code)
+                    response_data = response.json()
+                    # {"id":101,"player":8,"game_type":1,"result":3,"finished":true,"polls_list":[],"answered_polls":[20,21,3,2]}
+
+                    self.assertIn('id', response_data)
+                    self.assertIsInstance(response_data['id'], int)
+
+                    self.assertEqual(game.player, response_data['player'])
+                    self.assertEqual(game.game_type, response_data['game_type'])
+                    self.assertEqual(1, response_data['result'])
+                    self.assertTrue(response_data['finished'])
+                    self.assertListEqual(polls_list, response_data['polls_list'])
+                    self.assertListEqual(past_polls, response_data['answered_polls'])
+
+                self.assertFalse(mock_poll.called)
+                self.assertEqual(0, mock_poll.call_count)
+
+        self.assertTrue(mock_cache.called)
+        self.assertEqual(2, mock_cache.call_count)
+
+    def test_vote_per_game_with_future_poll_end_game(self):
+        polls_list = [23, 22]
+        past_polls = [20, 434]
+        poll_id = 21
+        url = reverse('poll-vote')
+
+        game = self.create_game(polls_list=polls_list, answered_polls=past_polls)
+        data = {
+            'token': 'token',
+            'player': game.player,
+            'game_type': game.game_type,
+            'game': game.id,
+            'vote': 'Davies',
+            'points': game.result,
+            'poll': poll_id
+        }
+        poll_data = {
+            'id': poll_id,
+            'title': 'What is the most common surname Wales?',
+            'category': 1,
+            'difficulty': 'easy',
+            'poll_type': 'single',
+            'help_text': '',
+            'positive_marks': 1,
+            'negative_marks': 0,
+            'created_by': 1,
+            'game': 1,
+            'answers': [
+                {
+                    "id": 47,
+                    "title": "Davies",
+                    "is_correct": True,
+                    "poll": poll_id,
+                    "next_poll": 22
+                },
+                {
+                    "id": 48,
+                    "title": "Evans",
+                    "is_correct": False,
+                    "poll": poll_id,
+                    "next_poll": 22
+                }
+            ]
+        }
+
+        with patch('django.core.cache.cache.get',
+                   return_value=poll_data) as mock_cache:
+            with patch('quiz.models.Game.polls_count', 3) as mock_polls_count:
+                with patch('quiz.views.get_poll',
+                           return_value=poll_data) as mock_poll:
+                    response = self.client.post(url, data=data,
+                                                content_type='application/json')
+                    self.assertEqual(201, response.status_code)
+                    response_data = response.json()
+                    self.assertDictEqual(poll_data, response_data.get('poll'))
+
+                    self.assertIn('id', response_data)
+                    self.assertIsInstance(response_data['id'], int)
+
+                    self.assertIn('player', response_data)
+                    self.assertIsInstance(response_data['player'], int)
+
+                    self.assertIn('game_type', response_data)
+                    self.assertIsInstance(response_data['game_type'], int)
+
+                    self.assertIn('result', response_data)
+                    self.assertIsInstance(response_data['result'], int)
+
+                    self.assertIn('finished', response_data)
+                    self.assertFalse(response_data['finished'])
+
+                    self.assertIn('polls_list', response_data)
+                    self.assertIsInstance(response_data['polls_list'], list)
+
+                    self.assertIn('answered_polls', response_data)
+                    self.assertIsInstance(response_data['answered_polls'], list)
+
+                    self.assertIn('polls_counter', response_data)
+                    self.assertEqual(3, response_data['polls_counter'])
+
+                self.assertTrue(mock_poll.called)
+                self.assertEqual(1, mock_poll.call_count)
+
+        self.assertTrue(mock_cache.called)
+        self.assertEqual(2, mock_cache.call_count)
