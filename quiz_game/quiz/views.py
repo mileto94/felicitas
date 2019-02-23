@@ -29,7 +29,9 @@ class StartGame(generics.CreateAPIView):
     serializer_class = NewGameSerializer
 
     def post(self, request, *args, **kwargs):
-        is_authenticated(request)
+        missing_auth = is_authenticated(request)
+        if missing_auth:
+            return missing_auth
 
         # validate user input
         serializer = self.get_serializer(data=request.data)
@@ -89,7 +91,9 @@ class EndGame(generics.CreateAPIView):
     serializer_class = EndGameSerializer
 
     def post(self, request, *args, **kwargs):
-        is_authenticated(request)
+        missing_auth = is_authenticated(request)
+        if missing_auth:
+            return missing_auth
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -112,7 +116,9 @@ class VotePerPoll(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
-        is_authenticated(request)
+        missing_auth = is_authenticated(request)
+        if missing_auth:
+            return missing_auth
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)

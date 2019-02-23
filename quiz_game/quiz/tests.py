@@ -37,11 +37,22 @@ class TestEndGame(BaseQuizGameTestCase, TestCase):
 
     def test_end_game(self):
         url = reverse('end-game')
+        data = {'id': self.game.id, 'token': 'token'}
+        with patch('django.core.cache.cache.get', return_value='token') as mock_cache:
+            response = self.client.post(
+                url, data=data, content_type='application/json')
+            self.assertEqual(201, response.status_code)
+            self.game.finished = True
+            self.assertDictEqual(model_to_dict(self.game), response.json())
+
+        self.assertTrue(mock_cache.called)
+        self.assertEqual(1, mock_cache.call_count)
+
+    def test_can_not_end_game_if_not_logged_in(self):
+        url = reverse('end-game')
         response = self.client.post(
             url, data={'id': self.game.id}, content_type='application/json')
-        self.assertEqual(201, response.status_code)
-        self.game.finished = True
-        self.assertDictEqual(model_to_dict(self.game), response.json())
+        self.assertEqual(403, response.status_code)
 
 
 class TestUserActions(TestCase):
@@ -218,10 +229,10 @@ class TestRankedScores(BaseQuizGameTestCase, TestCase):
         self.assertEqual(1, mock_players.call_count)
 
 
-class TestStartGame(BaseQuizGameTestCase, TestCase):
+class TestStartGame(TestCase):
     def test_start_game(self):
         url = reverse('start-game')
-        data = {'game_type': 1, 'player': 1}
+        data = {'game_type': 1, 'player': 1, 'token': 'token'}
         poll_data = {
             'id': 21,
             'title': 'What is the most common surname Wales?',
@@ -276,11 +287,11 @@ class TestStartGame(BaseQuizGameTestCase, TestCase):
             self.assertEqual(1, mock_sns.call_count)
 
         self.assertTrue(mock_cache.called)
-        self.assertEqual(1, mock_cache.call_count)
+        self.assertEqual(2, mock_cache.call_count)
 
     def test_start_game_with_more_questions(self):
         url = reverse('start-game')
-        data = {'game_type': 1, 'player': 1}
+        data = {'game_type': 1, 'player': 1, 'token': 'token'}
         poll_data = {
             'id': 21,
             'title': 'What is the most common surname Wales?',
@@ -338,4 +349,10 @@ class TestStartGame(BaseQuizGameTestCase, TestCase):
             self.assertEqual(1, mock_polls.call_count)
 
         self.assertTrue(mock_cache.called)
-        self.assertEqual(1, mock_cache.call_count)
+        self.assertEqual(2, mock_cache.call_count)
+
+    def test_can_not_start_game_if_not_logged_in(self):
+        url = reverse('start-game')
+        data = {'game_type': 1, 'player': 1}
+        response = self.client.post(url, data=data, content_type='application/json')
+        self.assertEqual(403, response.status_code)

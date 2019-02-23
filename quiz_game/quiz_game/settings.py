@@ -170,6 +170,10 @@ CACHES = {
     }
 }
 
+import sys
+if 'test' in sys.argv:
+    CACHES['default'] = {'BACKEND': 'django.core.cache.backends.dummy.DummyCache',}
+
 
 # TODO: Update via https://github.com/ottoyiu/django-cors-headers
 CORS_ORIGIN_ALLOW_ALL = True
