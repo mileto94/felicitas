@@ -145,15 +145,6 @@ AWS_SECRET_ACCESS_KEY = creds.AWS_SECRET_ACCESS_KEY or ''
 AWS_REGION_NAME = creds.AWS_REGION_NAME or ''
 
 
-SNS_SETTINGS = {
-    'updateGameInfo': {
-        'TopicArn': creds.SNS_SETTINGS['updateGameInfo']['TopicArn'] or ''
-    },
-    'updateGamePolls': {
-        'TopicArn': creds.SNS_SETTINGS['updateGamePolls']['TopicArn'] or ''
-    }
-}
-
 AWS_STORAGE_BUCKET_NAME = creds.AWS_STORAGE_BUCKET_NAME or ''
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_OBJECT_PARAMETERS = {
