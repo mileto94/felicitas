@@ -20,23 +20,6 @@ class NewGameSerializer(serializers.ModelSerializer):
         self.fields['player'].required = True
 
 
-class GameInfoUpdateSerializer(serializers.Serializer):
-    game_id = serializers.IntegerField()
-    game_info = serializers.CharField()
-
-    class Meta:
-        fields = ('game_id', 'game_info')
-
-
-class GamePollsUpdateSerializer(serializers.Serializer):
-    game_id = serializers.IntegerField()
-    polls = serializers.ListField(child=serializers.IntegerField())
-    count = serializers.IntegerField(min_value=1)
-
-    class Meta:
-        fields = ('game_id', 'polls', 'count')
-
-
 class EndGameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game

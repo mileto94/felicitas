@@ -10,14 +10,12 @@ from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import generics, permissions, response, status
-from rest_framework.parsers import JSONParser
 
 from quiz.authentication import is_authenticated
 from quiz.models import Game, VoteLog
-from quiz.request_parsers import PlainTextParser
 from quiz.serializers import (
-    GameInfoUpdateSerializer, NewGameSerializer, VotePollSerializer,
-    EndGameSerializer, GameScoreSerializer, GamePollsUpdateSerializer)
+    NewGameSerializer, VotePollSerializer, EndGameSerializer,
+    GameScoreSerializer)
 from quiz.utils import (
     get_available_polls, get_poll, get_players_data, get_games_data)
 
@@ -157,14 +155,14 @@ class VotePerPoll(generics.CreateAPIView):
                 # If the next poll is future, remove it from future list.
                 game.polls_list.remove(poll_id)
 
-        if not poll_id:
-            if len(game.answered_polls) < game.polls_count and len(game.polls_list):
+        if len(game.answered_polls) < game.polls_count and len(game.polls_list):
+            if not poll_id:
                 poll_id = game.polls_list[0]
                 game.polls_list = game.polls_list[1:]
-            else:
-                game.finished = True
-                game.save()
-                return response.Response(model_to_dict(votelog.game), status=status.HTTP_200_OK)
+        else:
+            game.finished = True
+            game.save()
+            return response.Response(model_to_dict(votelog.game), status=status.HTTP_200_OK)
 
         game.answered_polls.append(poll_id)
         game.save()
@@ -180,26 +178,6 @@ class VotePerPoll(generics.CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         return response.Response(
             response_data, status=status.HTTP_201_CREATED, headers=headers)
-
-
-class RetrieveGameInfoUpdate(generics.CreateAPIView):
-    queryset = VoteLog.objects.none()
-    authentication_classes = ()
-    permission_classes = ()
-    parser_classes = (PlainTextParser, JSONParser)
-    serializer_class = GameInfoUpdateSerializer
-
-    def post(self, request, *args, **kwargs):
-        print('Retrieved game info update: ', request.data)
-        message_data = json.loads(request.data.get('Message', "{}"))
-        serializer = self.get_serializer(data=message_data)
-        serializer.is_valid(raise_exception=True)
-
-        game_id = serializer.validated_data.get('game_id')
-        game_info = serializer.validated_data.get('game_info')
-        cache_key = settings.GAME_INFO_KEY.format(game_id=game_id)
-        cache.set(cache_key, game_info, timeout=None)
-        return response.Response({'status': 'OK'}, status=status.HTTP_200_OK)
 
 
 class RankedScores(generics.ListAPIView):
@@ -227,31 +205,6 @@ class RankedScores(generics.ListAPIView):
             game['player'] = players.get(str(game['player']), game['player'])
             game['game_type'] = game_types.get(str(game['game_type']), game['game_type'])
         return response.Response(data)
-
-
-class RetrieveGamePollsUpdate(generics.CreateAPIView):
-    queryset = VoteLog.objects.none()
-    authentication_classes = ()
-    permission_classes = ()
-    parser_classes = (PlainTextParser, JSONParser)
-    serializer_class = GamePollsUpdateSerializer
-
-    def post(self, request, *args, **kwargs):
-        print('Retrieved game polls update: ', request.data)
-        message_data = json.loads(request.data.get('Message', "{}"))
-        serializer = self.get_serializer(data=message_data)
-        serializer.is_valid(raise_exception=True)
-
-        game_id = serializer.validated_data.get('game_id')
-        game_polls = serializer.validated_data.get('polls')
-        polls_count = serializer.validated_data.get('count')
-        cache_key = settings.GAME_POLLS_KEY.format(game_id=game_id)
-        game_data = {
-            'polls': game_polls,
-            'count': polls_count
-        }
-        cache.set(cache_key, json.dumps(game_data), timeout=None)
-        return response.Response({'status': 'OK'}, status=status.HTTP_200_OK)
 
 
 @csrf_exempt

@@ -136,46 +136,6 @@ class TestUserActions(TestCase):
         self.assertEqual(0, mock_cache.call_count)
 
 
-class TestSNSNotifications(BaseQuizGameTestCase, TestCase):
-    def test_get_retrieve_polls_update(self):
-        url = reverse('game-polls-update')
-        response = self.client.get(url)
-        expected = {"detail": "Method \"GET\" not allowed."}
-        self.assertEqual(405, response.status_code)
-        self.assertDictEqual(expected, response.json())
-
-    def test_collect_game_polls_without_cached_value(self):
-        url = reverse('game-polls-update')
-        data = json.dumps({"Message": '{"game_id": 8, "polls": [23, 24], "count": 10}'})
-        expected = {'status': 'OK'}
-
-        with patch('django.core.cache.cache.set', return_value=None) as mock_cache:
-            response = self.client.post(url, data=data, content_type='application/json')
-            self.assertEqual(200, response.status_code)
-            self.assertDictEqual(expected, response.json())
-        self.assertTrue(mock_cache.called)
-        self.assertEqual(1, mock_cache.call_count)
-
-    def test_get_game_info_update(self):
-        url = reverse('game-info-update')
-        response = self.client.get(url)
-        expected = {"detail": "Method \"GET\" not allowed."}
-        self.assertEqual(405, response.status_code)
-        self.assertDictEqual(expected, response.json())
-
-    def test_retrieve_game_info_update(self):
-        url = reverse('game-info-update')
-        data = json.dumps({"Message": '{"game_id": 10, "game_info": "Test Description"}'})
-        expected = {'status': 'OK'}
-
-        with patch('django.core.cache.cache.set', return_value=None) as mock_cache:
-            response = self.client.post(url, data=data, content_type='application/json')
-            self.assertEqual(200, response.status_code)
-            self.assertDictEqual(expected, response.json())
-        self.assertTrue(mock_cache.called)
-        self.assertEqual(1, mock_cache.call_count)
-
-
 class TestRankedScores(BaseQuizGameTestCase, TestCase):
     def test_get_ranked_scores_for_all_games(self):
         url = reverse('ranked-scores')
