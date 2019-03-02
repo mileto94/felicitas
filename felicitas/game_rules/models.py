@@ -7,8 +7,6 @@ from django.core.validators import MaxValueValidator
 from django.db import models
 from django.forms.models import model_to_dict
 
-from felicitas.aws_connections import get_client
-
 
 class GameType(models.Model):
     name = models.CharField(max_length=50)
@@ -21,36 +19,10 @@ class GameType(models.Model):
     class Meta:
         verbose_name = 'Game Type'
         verbose_name_plural = 'Game Types'
+        ordering = ('-id', )
 
     def __str__(self):
         return self.name
-
-    def _update_game_info(self):
-        try:
-            sns_client = get_client('sns')
-            response = sns_client.publish(
-                TopicArn=settings.SNS_SETTINGS['updateGameInfo']['TopicArn'],
-                Message=json.dumps({
-                    'game_id': self.id,
-                    'game_info': self.description
-                }),
-                Subject='updateGameInfo',
-                MessageStructure='updateGameInfoStructure',
-                MessageAttributes={
-                    'updateGameInfoStructure': {
-                        'StringValue': 'updateGameInfo',
-                        'DataType': 'String'
-                    }
-                }
-            )
-            print('SNS response for game info update: ', response)
-        except Exception:
-            print('Failed to send information about game info update.')
-
-    def save(self, *args, **kwargs):
-        super(GameType, self).save(*args, **kwargs)
-        if self.is_active:
-            self._update_game_info()
 
     def get_image_url(self):
         return self.image.url if self.image else 'img/portfolio/02-thumbnail.jpg'
@@ -113,28 +85,13 @@ class BasePoll(models.Model):
         return self.title
 
     def _update_game_polls(self):
-        try:
-            sns_client = get_client('sns')
-            response = sns_client.publish(
-                TopicArn=settings.SNS_SETTINGS['updateGamePolls']['TopicArn'],
-                Message=json.dumps({
-                    'game_id': self.game_id,
-                    'polls': list(self.game.poll_set.values_list('id', flat=True)),
-                    'count': self.game.polls_count
-                }),
-                Subject='updateGamePolls',
-                MessageStructure='updateGamePollsStructure',
-                MessageAttributes={
-                    'updateGamePollsStructure': {
-                        'StringValue': 'updateGamePolls',
-                        'DataType': 'String'
-                    }
-                }
-            )
-            print('SNS response for game info update: ', response)
-        except Exception as e:
-            print('Failed to send information about game info update.')
-            print(e)
+        print('Update cache for game_id', self.game_id)
+        cache_key = settings.GAME_POLLS_KEY.format(game_id=self.game_id)
+        game_data = {
+            'polls': list(self.game.poll_set.values_list('id', flat=True)),
+            'count': self.game.polls_count
+        }
+        cache.set(cache_key, json.dumps(game_data), timeout=None)
 
     def save(self, *args, **kwargs):
         is_new = not self.id

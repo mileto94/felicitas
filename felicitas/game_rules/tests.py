@@ -20,8 +20,8 @@ class BaseFelicitasTestCase:
                 image=None,
             )
         if is_active:
-            self.assertTrue(mock_sns_client.called)
-            self.assertEqual(1, mock_sns_client.call_count)
+            self.assertFalse(mock_sns_client.called)
+            self.assertEqual(0, mock_sns_client.call_count)
 
         return game_type
 
@@ -35,24 +35,21 @@ class BaseFelicitasTestCase:
             is_staff=True)
 
     def create_poll(self, game, category, user):
-        with patch('boto3.client', return_value=MagicMock()) as mock_sns_client:
-            with patch('django.core.cache.cache.set', return_value=None) as mock_cache:
-                poll = Poll.objects.create(
-                    title='How is the weather today?',
-                    category=category,
-                    difficulty='easy',
-                    poll_type='single',
-                    help_text='Help text',
-                    positive_marks=1,
-                    negative_marks=-1,
-                    created_by=user,
-                    game=game
-                )
-            self.assertTrue(mock_cache.called)
-            self.assertEqual(1, mock_cache.call_count)
+        with patch('django.core.cache.cache.set', return_value=None) as mock_cache:
+            poll = Poll.objects.create(
+                title='How is the weather today?',
+                category=category,
+                difficulty='easy',
+                poll_type='single',
+                help_text='Help text',
+                positive_marks=1,
+                negative_marks=-1,
+                created_by=user,
+                game=game
+            )
+        self.assertTrue(mock_cache.called)
+        self.assertEqual(2, mock_cache.call_count)
 
-        self.assertTrue(mock_sns_client.called)
-        self.assertEqual(1, mock_sns_client.call_count)
         return poll
 
 
@@ -276,23 +273,23 @@ class TestPollModel(BaseFelicitasTestCase, TestCase):
 
     def test_poll_deletion(self):
         """Test serialize_poll() method of Poll model."""
-        with patch('boto3.client', return_value=MagicMock()) as mock_sns_client:
+        with patch('django.core.cache.cache.set') as mock_polls_cache:
             with patch('django.core.cache.cache.delete',
                        return_value=1) as mock_cache:
                 self.poll.delete()
             self.assertTrue(mock_cache.called)
             self.assertEqual(1, mock_cache.call_count)
 
-        self.assertTrue(mock_sns_client.called)
-        self.assertEqual(1, mock_sns_client.call_count)
+        self.assertTrue(mock_polls_cache.called)
+        self.assertEqual(1, mock_polls_cache.call_count)
 
     def test_poll_deletion_with_sns_failure(self):
         """Test serialize_poll() method of Poll model."""
-        with patch('boto3.client', return_value=MagicMock(), side_effect=IndexError) as mock_sns_client:
+        with patch('django.core.cache.cache.set') as mock_polls_cache:
             with patch('django.core.cache.cache.delete', return_value=1) as mock_cache:
                 self.poll.delete()
             self.assertTrue(mock_cache.called)
             self.assertEqual(1, mock_cache.call_count)
 
-        self.assertTrue(mock_sns_client.called)
-        self.assertEqual(1, mock_sns_client.call_count)
+        self.assertTrue(mock_polls_cache.called)
+        self.assertEqual(1, mock_polls_cache.call_count)

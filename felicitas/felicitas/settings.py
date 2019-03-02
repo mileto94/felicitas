@@ -188,5 +188,6 @@ CACHES = {
     }
 }
 
+GAME_POLLS_KEY = 'game-{game_id}-polls'
 POLL_DATA_KEY = 'poll-id-{id}'
 CACHE_TIMEOUT = 60 * 60 * 24 * 7  # 7 days
