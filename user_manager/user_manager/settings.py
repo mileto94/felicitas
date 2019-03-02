@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '6*z*s+&3g$*!t1!%@2n(n1@!+(&c*eb3-0_16k8%*g$pz%6wx$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', ['localhost', ])
+ALLOWED_HOSTS = ['localhost', 'e3aqa83by0.execute-api.us-east-2.amazonaws.com']
 
 
 # Application definition
@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'rest_auth.registration',
     'corsheaders',
+    'storages',
 
     'users_auth',
 ]
@@ -138,13 +139,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
-
-STATIC_URL = '/static/'
-
-
 # TODO: Update if you need to send the emails really
 EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 
@@ -167,3 +161,23 @@ CORS_ALLOW_METHODS = (
 #         }
 #     }
 # }
+
+# ----------- AWS Settings -------------
+import user_manager.aws_credentials as creds
+
+AWS_ACCESS_KEY_ID = creds.AWS_ACCESS_KEY_ID or ''
+AWS_SECRET_ACCESS_KEY = creds.AWS_SECRET_ACCESS_KEY or ''
+AWS_REGION_NAME = creds.AWS_REGION_NAME or ''
+
+
+AWS_STORAGE_BUCKET_NAME = creds.AWS_STORAGE_BUCKET_NAME or ''
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_LOCATION = 'static'
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'user_manager/static'), ]
+STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_DEFAULT_ACL = None
