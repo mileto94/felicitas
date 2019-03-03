@@ -23,11 +23,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '214$%tgcshh)q5k=n+c5l^p92$pxk&&323alt5+@8)(#c!xd@6'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
-# TODO: Update this on deploy. This will confirm only our services will communicate.
-
+ALLOWED_HOSTS = [
+    'localhost',
+    '3e2037d0.ngrok.io',
+    '0vquql6thh.execute-api.us-east-2.amazonaws.com',
+    'xymwo33qdh.execute-api.us-east-2.amazonaws.com',
+]
 
 # Application definition
 
@@ -39,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'django_extensions',
+    # 'django_extensions',
     'corsheaders',
     'storages',
 
@@ -47,6 +50,9 @@ INSTALLED_APPS = [
     'game_rules',
     'admin_auth',
 ]
+
+SITE_ID = 1
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -87,11 +93,11 @@ WSGI_APPLICATION = 'felicitas.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'felicitas',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'NAME': os.environ.get('DB_NAME', 'felicitas'),
+        'USER': os.environ.get('DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'postgres'),
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('DB_PORT', '5432')
     }
 }
 
@@ -132,7 +138,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_URL = '/static/'
+# STATIC_URL = '/static/'
 
 
 ADMIN_SITE_HEADER = 'Game Setup Administration'
@@ -143,19 +149,21 @@ import felicitas.aws_credentials as creds
 AWS_ACCESS_KEY_ID = creds.AWS_ACCESS_KEY_ID or ''
 AWS_SECRET_ACCESS_KEY = creds.AWS_SECRET_ACCESS_KEY or ''
 AWS_REGION_NAME = creds.AWS_REGION_NAME or ''
+AWS_S3_STORAGE = creds.AWS_S3_STORAGE or ''
 
 
 AWS_STORAGE_BUCKET_NAME = creds.AWS_STORAGE_BUCKET_NAME or ''
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_S3_STORAGE
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
-# AWS_LOCATION = 'static'
-#
+
+AWS_LOCATION = 'static'
+
 # STATICFILES_DIRS = [
 #     os.path.join(BASE_DIR, 'felicitas/static'),
 # ]
-# STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 DEFAULT_FILE_STORAGE = 'felicitas.storage_backends.MediaStorage'
 
@@ -172,7 +180,7 @@ CORS_ALLOW_METHODS = (
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": f"redis://{creds.CACHE_SERVER_URL}:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
