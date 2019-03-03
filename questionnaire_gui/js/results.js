@@ -1,7 +1,7 @@
 (function($) {
     "use strict"; // Start of use strict
 
-    $.get(`http://localhost:8001/ranked-scores/${localStorage.game_type_id}`).done(function (data) {
+    $.get(`${gameManagerUrl}/ranked-scores/${localStorage.game_type_id}`).done(function (data) {
         console.log('All results are loaded');
         $('#game-type-name').text(localStorage.game_type_name);
         $.each(data, function (index, score) {

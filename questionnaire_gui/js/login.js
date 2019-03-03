@@ -5,7 +5,7 @@
         event.preventDefault();
         var username = $('#username').val();
         $.ajax({
-            url: 'http://localhost:8002/rest-auth/login/',
+            url: `${userManagerUrl}/rest-auth/login/`,
             method: 'POST',
             data: {
                 'username': username,
@@ -14,7 +14,7 @@
         }).done(function (data) {
             localStorage.setItem('user_key', data.key);
             $.ajax({
-                url: 'http://localhost:8001/validate-token/',
+                url: `${gameManagerUrl}/validate-token/`,
                 method: 'POST',
                 data: {
                     'username': username,

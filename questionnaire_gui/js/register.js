@@ -5,7 +5,7 @@
         event.preventDefault();
 
         $.ajax({
-            url: 'http://localhost:8002/rest-auth/registration/',
+            url: `${userManagerUrl}/rest-auth/registration/`,
             method: 'POST',
             data: {
                 'email': $('#email').val(),

@@ -11,7 +11,7 @@
     }
 
     $.ajax({
-        url: 'http://localhost:8001/start-game/',
+        url: `${gameManagerUrl}/start-game/`,
         method: 'POST',
         data: JSON.stringify({
             "token": localStorage.getItem('user_key'),
@@ -50,7 +50,7 @@
         event.preventDefault();
 
         $.ajax({
-        url: 'http://localhost:8001/poll-vote/',
+        url: `${gameManagerUrl}/poll-vote/`,
         method: 'POST',
         data: JSON.stringify({
             "token": localStorage.getItem('user_key'),
@@ -101,7 +101,7 @@
 function endGame() {
     if(confirm('Are you sure you want to end your game?')) {
         $.ajax({
-            url: 'http://localhost:8001/end-game/',
+            url: `${gameManagerUrl}/end-game/`,
             method: 'POST',
             data: JSON.stringify({
                 "token": localStorage.getItem('user_key'),

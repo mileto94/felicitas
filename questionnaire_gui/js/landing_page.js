@@ -1,7 +1,7 @@
 (function($) {
     "use strict"; // Start of use strict
 
-    $.ajax('http://localhost:8000/games-list/').then(function (data) {
+    $.ajax(`${gameSetupUrl}/games-list/`).then(function (data) {
        $.each(data.games, function (index, game) {
            $('#games-list').append(`
                 <div class="col-md-4 col-sm-6 portfolio-item">
