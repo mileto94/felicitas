@@ -9,8 +9,8 @@ def get_available_polls(game_type_id):
     """Get data for available polls per game type id via API."""
 
     poll_response = requests.get(
-        url=f'http://localhost:8000/all-polls/{game_type_id}/',
-        timeout=0.1  # in sec
+        url=f'{settings.GAME_SETUP_URL}/all-polls/{game_type_id}/',
+        timeout=5  # in sec
     )
     if poll_response.status_code == 200:
         return poll_response.json()
@@ -21,8 +21,8 @@ def get_poll_data(game_type_id, poll_id):
     """Get data for poll via API."""
 
     poll_response = requests.get(
-        url=f'http://localhost:8000/next-poll/{game_type_id}/{poll_id}/',
-        timeout=0.1  # in sec
+        url=f'{settings.GAME_SETUP_URL}/next-poll/{game_type_id}/{poll_id}/',
+        timeout=5  # in sec
     )
     if poll_response.status_code == 200:
         return poll_response.json()
@@ -46,9 +46,9 @@ def get_players_data(players):
     """Get data for players by id via API."""
 
     users_response = requests.get(
-        url='http://localhost:8002/user-data/',
+        url=f'{settings.USER_MANAGER}/user-data/',
         params={'player_id': players},
-        timeout=0.1  # in sec
+        timeout=5  # in sec
     )
     if users_response.status_code == 200:
         return users_response.json().get('players')
@@ -59,9 +59,9 @@ def get_games_data(games):
     """Get data for game name by id via API."""
 
     games_response = requests.get(
-        url='http://localhost:8000/games-data/',
+        url=f'{settings.GAME_SETUP_URL}/games-data/',
         params={'game_id': games},
-        timeout=0.1  # in sec
+        timeout=5  # in sec
     )
     if games_response.status_code == 200:
         return games_response.json().get('games')

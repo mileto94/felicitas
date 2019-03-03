@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import quiz_game.aws_credentials as creds
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -23,10 +24,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '3hs4n3mlu2=l7tlg^*711edg69hrgi^m(tko0*l!7%v=h7(t=@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
-# TODO: Update this on deploy. This will confirm only our services will communicate.
+ALLOWED_HOSTS = creds.ALLOWED_HOSTS or ['localhost']
 
 
 # Application definition
@@ -39,13 +39,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'django_extensions',
+    # 'django_extensions',
     'rest_framework',
     'corsheaders',
+    'storages',
 
     # custom
     'quiz.apps.QuizConfig',
 ]
+
+
+SITE_ID = 1
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -89,11 +94,11 @@ DATABASES = {
     },
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'quiz_game',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'NAME': os.environ.get('DB_NAME', 'quiz_game'),
+        'USER': os.environ.get('DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'postgres'),
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('DB_PORT', '5432')
     }
 }
 
@@ -163,7 +168,7 @@ CACHE_USER_TIMEOUT = 60 * 60 * 24  # 1 day
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": f"redis://{creds.CACHE_SERVER_URL}:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -182,7 +187,6 @@ CORS_ALLOW_METHODS = (
     'POST',
 )
 
-import quiz_game.aws_credentials as creds
 
 AWS_ACCESS_KEY_ID = creds.AWS_ACCESS_KEY_ID or ''
 AWS_SECRET_ACCESS_KEY = creds.AWS_SECRET_ACCESS_KEY or ''
@@ -194,3 +198,20 @@ SNS_SETTINGS = {
         'TopicArn': creds.SNS_SETTINGS['collectGamePolls']['TopicArn'] or ''
     }
 }
+
+AWS_STORAGE_BUCKET_NAME = creds.AWS_STORAGE_BUCKET_NAME or ''
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_LOCATION = 'static'
+
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'game_manager/static'), ]
+STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_DEFAULT_ACL = None
+
+
+# Microservices endpoints
+USER_MANAGER_URL = creds.USER_MANAGER_URL or 'http://localhost:8002'
+GAME_SETUP_URL = creds.GAME_SETUP_URL or 'http://localhost:8000'

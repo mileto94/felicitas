@@ -212,8 +212,8 @@ def validate_token(request):
     token = request.POST.get('token')
     username = request.POST.get('username')
     if request.method == 'POST' and token and username:
-        url = 'http://localhost:8002/verify-token/'
-        response = requests.post(url, data=request.POST, timeout=0.05)  # in sec
+        url = f'{settings.USER_MANAGER}/verify-token/'
+        response = requests.post(url, data=request.POST, timeout=5)  # in sec
         if response.status_code == 200:
             user_id = response.json().get('user_id')
             user_key = settings.USER_TOKEN_KEY.format(token=token)
