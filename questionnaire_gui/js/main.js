@@ -1,10 +1,11 @@
 (function($) {
     "use strict"; // Start of use strict
-    var userManagerUrl = 'https://e3aqa83by0.execute-api.us-east-2.amazonaws.com/production',
-        gameManagerUrl = 'https://xymwo33qdh.execute-api.us-east-2.amazonaws.com/production',
-        gameSetupUrl = 'https://0vquql6thh.execute-api.us-east-2.amazonaws.com/production';
     updateUserControls();
 })(jQuery);
+
+var userManagerUrl = 'https://e3aqa83by0.execute-api.us-east-2.amazonaws.com/production',
+    gameManagerUrl = 'https://xymwo33qdh.execute-api.us-east-2.amazonaws.com/production',
+    gameSetupUrl = 'https://0vquql6thh.execute-api.us-east-2.amazonaws.com/production';
 
 function logOut() {
     $.ajax({
