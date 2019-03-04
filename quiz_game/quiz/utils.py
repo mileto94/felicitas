@@ -46,7 +46,7 @@ def get_players_data(players):
     """Get data for players by id via API."""
 
     users_response = requests.get(
-        url=f'{settings.USER_MANAGER}/user-data/',
+        url=f'{settings.USER_MANAGER_URL}/user-data/',
         params={'player_id': players},
         timeout=5  # in sec
     )

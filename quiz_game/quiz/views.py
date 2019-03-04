@@ -212,7 +212,7 @@ def validate_token(request):
     token = request.POST.get('token')
     username = request.POST.get('username')
     if request.method == 'POST' and token and username:
-        url = f'{settings.USER_MANAGER}/verify-token/'
+        url = f'{settings.USER_MANAGER_URL}/verify-token/'
         response = requests.post(url, data=request.POST, timeout=5)  # in sec
         if response.status_code == 200:
             user_id = response.json().get('user_id')
