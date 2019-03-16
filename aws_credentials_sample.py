@@ -12,6 +12,7 @@ SNS_SETTINGS = {
 
 # Microservices endpoints
 USER_MANAGER_URL = 'http://localhost:8002'
+GAME_MANAGER_URL = 'http://localhost:8001'
 GAME_SETUP_URL = 'http://localhost:8000'
 
 CACHE_SERVER_URL = '127.0.0.1'
