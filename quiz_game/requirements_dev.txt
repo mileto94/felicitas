@@ -1,4 +1,4 @@
 django-extensions==2.1.4
 Werkzeug==0.14.1
-ipython==7.3.0
+ipython==7.16.3
 coverage==4.5.2
